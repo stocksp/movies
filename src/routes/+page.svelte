@@ -38,14 +38,14 @@
 		{#each data.movieData as record}
 			<Card>
 				<Row>
-					<Col md="4">
+					<Col md="2">
 						<img
 							src="data:image/jpeg;base64,{record.picture}"
 							alt={record.name}
 							class="img-fluid rounded-start"
 						/>
 					</Col>
-					<Col md="8">
+					<Col md="10">
 						<CardTitle>{record.name}</CardTitle>
 						<CardText>{record.character}</CardText>
 					</Col>
