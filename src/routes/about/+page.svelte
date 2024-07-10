@@ -15,11 +15,9 @@
 	  movieData: Array<{
 		title: string;
 		release_date: string;
-		name: string;
-		character: string;
-		birthday: string;
-		birthplace: string;
-		picture: string | null;
+		overview: string;
+		runtime: string;
+		poster: string | null;
 	  }>;
 	}} */
 	export let data;
@@ -49,7 +47,7 @@
 					<Col md="1">
 						<img
 							src="data:image/jpeg;base64,{record.poster}"
-							alt={record.name}
+							alt={record.title}
 							class="img-fluid rounded-start"
 						/>
 					</Col>
