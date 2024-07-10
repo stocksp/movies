@@ -4,7 +4,7 @@ import { turso } from '$lib/server/turso';
 
 export async function load({ url }) {
     const page = parseInt(url.searchParams.get('page') || '1');
-    const pageSize = 20; // Number of records per page
+    const pageSize = 75; // Number of records per page
     const offset = (page - 1) * pageSize;
 
     const totalCountResult = await turso.execute({
@@ -17,9 +17,14 @@ export async function load({ url }) {
 
     const movieData = await turso.execute({
         sql: `
-            SELECT m.title, m.release_date, m.overview, m.runtime, m.poster
+        SELECT CASE
+        WHEN m.title LIKE 'a %' THEN SUBSTR(m.title, 3)
+        WHEN m.title LIKE 'the %' THEN SUBSTR(m.title, 5)
+        ELSE m.title
+        END AS title
+        ,m.release_date, m.overview, m.runtime, m.poster
             FROM movies m
-            ORDER BY m.title COLLATE NOCASE
+            ORDER BY title COLLATE NOCASE
             LIMIT ? OFFSET ?
         `,
         args: [pageSize, offset]

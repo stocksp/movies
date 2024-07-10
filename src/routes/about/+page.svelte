@@ -20,11 +20,9 @@
 	  movieData: Array<{
 		title: string;
 		release_date: string;
-		name: string;
-		character: string;
-		birthday: string;
-		birthplace: string;
-		picture: string | null;
+		runtime: string;
+        overview: string;
+		poster: string | null;
 	  }>;
 	  pagination: {
 		currentPage: number;
@@ -49,6 +47,25 @@
 	{#if data.movieData.length === 0}
 		<p>Waiting on data...</p>
 	{:else}
+	<Pagination aria-label="Page navigation">
+		<PaginationItem disabled={data.pagination.currentPage === 1}>
+			<PaginationLink previous href="?page={data.pagination.currentPage - 1}">
+				<a href="?page={data.pagination.currentPage - 1}" on:click|preventDefault={() => changePage(data.pagination.currentPage - 1)}>Previous</a>
+			</PaginationLink>
+		</PaginationItem>
+		{#each Array(data.pagination.totalPages) as _, i}
+			<PaginationItem active={i + 1 === data.pagination.currentPage}>
+				<PaginationLink href="?page={i + 1}">
+					<a href="?page={i + 1}" on:click|preventDefault={() => changePage(i + 1)}>{i + 1}</a>
+				</PaginationLink>
+			</PaginationItem>
+		{/each}
+		<PaginationItem disabled={data.pagination.currentPage === data.pagination.totalPages}>
+			<PaginationLink next href="?page={data.pagination.currentPage + 1}">
+				<a href="?page={data.pagination.currentPage + 1}" on:click|preventDefault={() => changePage(data.pagination.currentPage + 1)}>Next</a>
+			</PaginationLink>
+		</PaginationItem>
+	</Pagination>
 		{#each data.movieData as record}
 			<Card>
 				<Row>
@@ -71,24 +88,6 @@
 			</Card>
 		{/each}
 
-		<Pagination aria-label="Page navigation">
-			<PaginationItem disabled={data.pagination.currentPage === 1}>
-				<PaginationLink previous href="?page={data.pagination.currentPage - 1}">
-					<a href="?page={data.pagination.currentPage - 1}" on:click|preventDefault={() => changePage(data.pagination.currentPage - 1)}>Previous</a>
-				</PaginationLink>
-			</PaginationItem>
-			{#each Array(data.pagination.totalPages) as _, i}
-				<PaginationItem active={i + 1 === data.pagination.currentPage}>
-					<PaginationLink href="?page={i + 1}">
-						<a href="?page={i + 1}" on:click|preventDefault={() => changePage(i + 1)}>{i + 1}</a>
-					</PaginationLink>
-				</PaginationItem>
-			{/each}
-			<PaginationItem disabled={data.pagination.currentPage === data.pagination.totalPages}>
-				<PaginationLink next href="?page={data.pagination.currentPage + 1}">
-					<a href="?page={data.pagination.currentPage + 1}" on:click|preventDefault={() => changePage(data.pagination.currentPage + 1)}>Next</a>
-				</PaginationLink>
-			</PaginationItem>
-		</Pagination>
+
 	{/if}
 </Container>
