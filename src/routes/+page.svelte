@@ -1,22 +1,27 @@
 <script>
 	import { Container, Form, FormGroup, Input, Button } from '@sveltestrap/sveltestrap';
+	import { goto } from '$app/navigation';
 
-/** @type {string} */
-let name = '';
+	/** @type {string} */
+	let name = '';
 
-/** @type {string[]} */
-let selectedGenres = [];
+	/** @type {string[]} */
+	let selectedGenres = [];
 
-/** @type {string[]} */
-const genres = ['Adventure', 'Fantasy', 'Animation', 'Drama', 'Horror', 'Action', 'Comedy', 'History', 'Western', 'Thriller', 'Crime', 'Documentary', 'Science Fiction', 'Mystery', 'Music', 'Romance', 'Family', 'War', 'TV Movie'];
+	/** @type {string[]} */
+	const genres = ['Adventure', 'Fantasy', 'Animation', 'Drama', 'Horror', 'Action', 'Comedy', 'History', 'Western', 'Thriller', 'Crime', 'Documentary', 'Science Fiction', 'Mystery', 'Music', 'Romance', 'Family', 'War', 'TV Movie'];
 
-/**
- * Handles the button click event
- */
-function handleClick() {
-    console.log('Name:', name);
-    console.log('Selected Genres:', selectedGenres);
-}
+	/**
+	 * Handles the form submission
+	 * @param {Event} event
+	 */
+	function handleSubmit(event) {
+		event.preventDefault();
+		const params = new URLSearchParams();
+		params.append('name', name);
+		selectedGenres.forEach(genre => params.append('genres', genre));
+		goto(`/search?${params.toString()}`);
+	}
 </script>
 
 <svelte:head>
@@ -25,7 +30,7 @@ function handleClick() {
 </svelte:head>
 
 <Container fluid>
-	<Form>
+	<Form on:submit={handleSubmit}>
 		<FormGroup row>
 			<Input name='name' placeholder="Enter a movie name" bind:value={name} />
 		</FormGroup>
@@ -39,6 +44,6 @@ function handleClick() {
 				{/each}
 			</select>
 		</FormGroup>
-		<Button size="md" on:click={handleClick} disabled={!name}>Go get em!</Button>
+		<Button type="submit" size="md" disabled={!name}>Go get em!</Button>
 	</Form>
 </Container>
