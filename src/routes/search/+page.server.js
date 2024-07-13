@@ -32,7 +32,7 @@ export async function load({ url }) {
       WHEN m.title LIKE 'the %' THEN SUBSTR(m.title, 5)
       ELSE m.title
       END AS title
-      ,m.release_date, m.overview, m.runtime, m.poster
+      ,m.release_date, m.overview, m.runtime, m.poster, m.id
       FROM movies m
       WHERE (
          SELECT COUNT(*)

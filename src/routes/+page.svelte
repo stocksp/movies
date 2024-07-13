@@ -40,7 +40,7 @@
 			<Input name='name' placeholder="Enter a movie name" bind:value={name} />
 		</FormGroup>
 		<FormGroup row>
-			<label for="genra">Choose a Genra:</label>
+			<label for="genra">Choose a Genre:</label>
 
 			<select name="genra" id="genra" multiple bind:value={selectedGenres}>
 				<option value="" disabled>--Choose a Genre--</option>
