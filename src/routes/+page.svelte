@@ -8,6 +8,9 @@
 	/** @type {string[]} */
 	let selectedGenres = [];
 
+	/** @type {string} */
+	let genrecount = '';
+
 	/** @type {string[]} */
 	const genres = ['Adventure', 'Fantasy', 'Animation', 'Drama', 'Horror', 'Action', 'Comedy', 'History', 'Western', 'Thriller', 'Crime', 'Documentary', 'Science Fiction', 'Mystery', 'Music', 'Romance', 'Family', 'War', 'TV Movie'];
 
@@ -19,7 +22,9 @@
 		event.preventDefault();
 		const params = new URLSearchParams();
 		params.append('name', name);
-		selectedGenres.forEach(genre => params.append('genres', genre));
+		genrecount = selectedGenres.length.toString();
+		params.append('genrecount', genrecount.toString())
+		selectedGenres.forEach(genre => params.append('genres', "'" + genre + "'" ));
 		goto(`/search?${params.toString()}`);
 	}
 </script>
@@ -38,7 +43,7 @@
 			<label for="genra">Choose a Genra:</label>
 
 			<select name="genra" id="genra" multiple bind:value={selectedGenres}>
-				<option value="" disabled>--Choose a Genra--</option>
+				<option value="" disabled>--Choose a Genre--</option>
 				{#each genres as genre}
 					<option value={genre}>{genre}</option>
 				{/each}

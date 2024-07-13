@@ -9,6 +9,7 @@ import { turso } from '$lib/server/turso';
  * @typedef {Object} LoadResult
  * @property {string | null} name
  * @property {string[]} genres
+ * @property {number | null} genrecount
  */
 
 /**
@@ -18,8 +19,10 @@ import { turso } from '$lib/server/turso';
 export async function load({ url }) {
     const name = url.searchParams.get('name');
     const genres = url.searchParams.getAll('genres');
-  
-    console.log('Search parameters:', { name, genres });
+    const genrestring = genres.join(", ");
+    const genrecount = Number(url.searchParams.get('genrecount'));
+ 
+    console.log('Search parameters:', { name, genrestring, genrecount });
     const movieData = await turso.execute({
         sql: `
         SELECT CASE
@@ -28,11 +31,17 @@ export async function load({ url }) {
         ELSE m.title
         END AS title
         ,m.release_date, m.overview, m.runtime, m.poster
-            FROM movies m
-            WHERE m.title LIKE ?
-            ORDER BY title COLLATE NOCASE
+        FROM movies m
+        where (
+           select count(*)
+           from genres gs
+           join genre g on g.id = gs.genreid
+           where movieid = m.id and g.name in ('Comedy', 'Horror')
+        ) = ?
+        AND m.title LIKE ?
+        ORDER BY title COLLATE NOCASE
         `,
-        args: [`%${name}%`]
+        args: [genrecount, `%${name}%`]
     });
     const serializedMovieData = movieData.rows.map(record => ({
         ...record,
