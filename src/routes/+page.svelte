@@ -24,7 +24,7 @@
 		params.append('name', name);
 		genrecount = selectedGenres.length.toString();
 		params.append('genrecount', genrecount.toString())
-		selectedGenres.forEach(genre => params.append('genres', "'" + genre + "'" ));
+		selectedGenres.forEach(genre => params.append('genres', genre))
 		goto(`/search?${params.toString()}`);
 	}
 </script>
