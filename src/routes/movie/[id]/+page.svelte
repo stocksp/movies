@@ -1,5 +1,20 @@
 <script>
 	import { goto } from '$app/navigation';
+  import {
+        Container,
+        Card,
+        CardBody,
+        CardFooter,
+        CardHeader,
+        CardSubtitle,
+        CardText,
+        Row,
+        Col,
+        CardTitle,
+        Pagination,
+        PaginationItem,
+        PaginationLink
+    } from '@sveltestrap/sveltestrap';
 
 	/** @type {{
     movieDetails: {
@@ -44,11 +59,9 @@
 <h2>Cast</h2>
 <div class="cast-grid">
 	{#each data.cast as actor}
-		<div
+		<Card
 			class="actor-card"
-			on:click={() => navigateToActor(actor.id)}
-			on:keydown={(e) => e.key === 'Enter' && navigateToActor(actor.id)}
-			tabindex="0"
+      on:click={() => navigateToActor(actor.id)}
 		>
 			<div class="actor-image">
 				{#if actor.picture}
@@ -62,7 +75,7 @@
 				<p>as {actor.character}</p>
 				<p>Total roles: {actor.roles}</p>
 			</div>
-		</div>
+		</Card>
 	{/each}
 </div>
 
