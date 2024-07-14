@@ -1,4 +1,6 @@
 <script>
+  import { goto } from '$app/navigation';
+
   /** @type {{
     movieDetails: {
       title: string;
@@ -9,6 +11,7 @@
     };
     genres: Array<{ name: string }>;
     cast: Array<{
+      id: number;
       name: string;
       character: string;
       picture: string | null;
@@ -17,7 +20,9 @@
   }} */
   export let data;
 
-  //console.log(JSON.stringify(data, null, 2));
+  function navigateToActor(actorId) {
+    goto(`/actor/${id}`);
+  }
 </script>
 
 <h1>{data.movieDetails.title}</h1>
@@ -33,19 +38,80 @@
 </ul>
 
 <h2>Cast</h2>
-<ul>
+<div class="cast-grid">
   {#each data.cast as actor}
-  <li style="height: 60px; display: flex; align-items: center;">
-    {#if actor.picture}
-      <img 
-        src="data:image/jpeg;base64,{actor.picture}" 
-        alt={actor.name} 
-        style="height: 50px; width: 50px; object-fit: contain; margin-right: 10px;" 
-      />
-    {:else}
-      <div style="width: 50px; height: 50px; margin-right: 10px;"></div>
-    {/if}
-    <span>{actor.name} as {actor.character} (Total roles: {actor.roles})</span>
-  </li>
+    <div 
+      class="actor-card"
+      on:click={() => navigateToActor(actor.id)}
+      on:keydown={(e) => e.key === 'Enter' && navigateToActor(actor.id)}
+      tabindex="0"
+    >
+      <div class="actor-image">
+        {#if actor.picture}
+          <img 
+            src="data:image/jpeg;base64,{actor.picture}" 
+            alt={actor.name} 
+          />
+        {:else}
+          <div class="placeholder-image"></div>
+        {/if}
+      </div>
+      <div class="actor-info">
+        <h3>{actor.name}</h3>
+        <p>as {actor.character}</p>
+        <p>Total roles: {actor.roles}</p>
+      </div>
+    </div>
   {/each}
-</ul>
+</div>
+
+<style>
+  .cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .actor-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .actor-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .actor-image {
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+  }
+
+  .actor-image img, .placeholder-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder-image {
+    background-color: #ddd;
+  }
+
+  .actor-info {
+    padding: 1rem;
+  }
+
+  .actor-info h3 {
+    margin: 0 0 0.5rem 0;
+  }
+
+  .actor-info p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+</style>

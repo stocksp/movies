@@ -30,7 +30,7 @@ export async function load({ params }) {
   // Query 3: Cast
   const cast = await turso.execute({
     sql: `
-      select a.name, c.character, a.picture,
+      select a.id, a.name, c.character, a.picture,
       (select count(*) from cast where actorid = c.actorid) as roles
       from movies m
       join cast c on c.movieid = m.id
