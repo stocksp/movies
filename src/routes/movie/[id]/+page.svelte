@@ -35,6 +35,17 @@
 <h2>Cast</h2>
 <ul>
   {#each data.cast as actor}
-    <li>{actor.name} as {actor.character} (Total roles: {actor.roles})</li>
+  <li style="height: 60px; display: flex; align-items: center;">
+    {#if actor.picture}
+      <img 
+        src="data:image/jpeg;base64,{actor.picture}" 
+        alt={actor.name} 
+        style="height: 50px; width: 50px; object-fit: contain; margin-right: 10px;" 
+      />
+    {:else}
+      <div style="width: 50px; height: 50px; margin-right: 10px;"></div>
+    {/if}
+    <span>{actor.name} as {actor.character} (Total roles: {actor.roles})</span>
+  </li>
   {/each}
 </ul>
