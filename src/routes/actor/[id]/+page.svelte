@@ -3,7 +3,7 @@
     actorDetails: {
         name: string;
         birthday: string;
-        deathday: string
+        deathday: string;
         birthplace: string;
         biography: string;
         picture: string | null;
@@ -15,21 +15,29 @@
     }>;
   }} */
 	export let data;
-	//console.log(JSON.stringify(data, null, 2));
 
-	// deal with age and death
-	let dateBirth, dateDeath, dateToday, ageInYears, span;
-	if (data.actorDetails.birthday != '' && data.actorDetails.deathday != '') {
-		dateBirth = new Date(data.actorDetails.birthday);
-		dateDeath = new Date(data.actorDetails.deathday);
-		span = dateDeath - dateBirth;
-		ageInYears = Math.floor(span / (1000 * 60 * 60 * 24 * 365.25)); // More accurate for leap years
-	} else if (data.actorDetails.birthday != '' && data.actorDetails.deathday == '') {
-		dateToday = new Date();
-		dateToday.setHours(0, 0, 0, 0);
-		dateBirth = new Date(data.actorDetails.birthday);
-		span = dateToday - dateBirth;
-		ageInYears = Math.floor(span / (1000 * 60 * 60 * 24 * 365.25)); // More accurate for leap years
+	/** @type {number | null} */
+	let ageInYears = null;
+
+	/**
+	 * @param {string} birthday
+	 * @param {string | null} [endDate=null]
+	 * @returns {number}
+	 */
+	function calculateAge(birthday, endDate = null) {
+		const dateBirth = new Date(birthday);
+		const dateEnd = endDate ? new Date(endDate) : new Date();
+		dateEnd.setHours(0, 0, 0, 0);
+		const span = dateEnd.getTime() - dateBirth.getTime();
+		return Math.floor(span / (1000 * 60 * 60 * 24 * 365.25));
+	}
+
+	if (data.actorDetails.birthday) {
+		if (data.actorDetails.deathday) {
+			ageInYears = calculateAge(data.actorDetails.birthday, data.actorDetails.deathday);
+		} else {
+			ageInYears = calculateAge(data.actorDetails.birthday);
+		}
 	}
 </script>
 
@@ -45,11 +53,11 @@
 {/if}
 {#if data.actorDetails.birthday && data.actorDetails.deathday}
 	<h6>Born {data.actorDetails.birthday}</h6>
-{:else}
+{:else if data.actorDetails.birthday && ageInYears !== null}
 	<h6>Born {data.actorDetails.birthday} Age {ageInYears}</h6>
 {/if}
 <h6>in {data.actorDetails.birthplace}</h6>
-{#if data.actorDetails.birthday && data.actorDetails.deathday}
+{#if data.actorDetails.birthday && data.actorDetails.deathday && ageInYears !== null}
 	<h6>Died {data.actorDetails.deathday} Age {ageInYears}</h6>
 {/if}
 <h6>{data.actorDetails.biography}</h6>
@@ -59,3 +67,4 @@
 		<li>As {role.character} in {role.title} released on {role.releasedate}</li>
 	{/each}
 </ul>
+
