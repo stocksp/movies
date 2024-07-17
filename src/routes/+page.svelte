@@ -12,7 +12,27 @@
 	let genrecount = '';
 
 	/** @type {string[]} */
-	const genres = ['Adventure', 'Fantasy', 'Animation', 'Drama', 'Horror', 'Action', 'Comedy', 'History', 'Western', 'Thriller', 'Crime', 'Documentary', 'Science Fiction', 'Mystery', 'Music', 'Romance', 'Family', 'War', 'TV Movie'];
+	const genres = [
+		'Adventure',
+		'Fantasy',
+		'Animation',
+		'Drama',
+		'Horror',
+		'Action',
+		'Comedy',
+		'History',
+		'Western',
+		'Thriller',
+		'Crime',
+		'Documentary',
+		'Science Fiction',
+		'Mystery',
+		'Music',
+		'Romance',
+		'Family',
+		'War',
+		'TV Movie'
+	];
 
 	/**
 	 * Handles the form submission
@@ -23,8 +43,8 @@
 		const params = new URLSearchParams();
 		params.append('name', name);
 		genrecount = selectedGenres.length.toString();
-		params.append('genrecount', genrecount.toString())
-		selectedGenres.forEach(genre => params.append('genres', genre))
+		params.append('genrecount', genrecount.toString());
+		selectedGenres.forEach((genre) => params.append('genres', genre));
 		goto(`/search?${params.toString()}`);
 	}
 </script>
@@ -37,7 +57,7 @@
 <Container fluid>
 	<Form on:submit={handleSubmit}>
 		<FormGroup row>
-			<Input name='name' placeholder="Enter a movie name" bind:value={name} />
+			<Input name="name" placeholder="Enter a movie name" bind:value={name} />
 		</FormGroup>
 		<FormGroup row>
 			<label for="genra">Choose a Genre:</label>
@@ -49,6 +69,6 @@
 				{/each}
 			</select>
 		</FormGroup>
-		<Button type="submit" size="md" disabled={!name}>Go get em!</Button>
+		<Button type="submit" size="md">Retrieve Movies</Button>
 	</Form>
 </Container>
