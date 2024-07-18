@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-  import {
+    import {
         Container,
         Card,
         CardBody,
@@ -60,9 +60,10 @@
 <h2>Cast</h2>
 <div class="cast-list">
   {#each data.cast as actor}
-    <div
+    <a
+      href="/actor/{actor.id}"
       class="actor-card"
-      on:click={() => navigateToActor(actor.id)}
+      on:click|preventDefault={() => navigateToActor(actor.id)}
     >
       <div class="actor-info">
         <h3>{actor.name}</h3>
@@ -76,7 +77,7 @@
           <div class="placeholder-image"></div>
         {/if}
       </div>
-    </div>
+    </a>
   {/each}
 </div>
 
@@ -98,6 +99,8 @@
     border-radius: 1px;
     background-color: #fff;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
   }
 
   .actor-info {
@@ -136,7 +139,7 @@
   .placeholder-image {
     width: 100%;
     height: 100%;
-    object-fit: contain  ;
+    object-fit: contain;
     border-radius: 5px;
   }
 
