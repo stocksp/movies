@@ -10,6 +10,7 @@
     };
     roles: Array<{
         character: string;
+		movieId: number;
         title: string;
         releasedate: string;
     }>;
@@ -64,7 +65,8 @@
 <h2>Roles</h2>
 <ul>
 	{#each data.roles as role}
-		<li>As {role.character} in {role.title} released on {role.releasedate}</li>
+		<li>
+			As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.releasedate}
+		</li>
 	{/each}
 </ul>
-
