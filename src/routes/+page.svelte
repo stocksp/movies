@@ -34,6 +34,13 @@
 		'TV Movie'
 	];
 
+	/** @type {{
+    genre: {
+      id: number;
+      title: string;
+    };
+  }} */
+
 	/**
 	 * Handles the form submission
 	 * @param {Event} event
@@ -47,6 +54,9 @@
 		selectedGenres.forEach((genre) => params.append('genres', genre));
 		goto(`/search?${params.toString()}`);
 	}
+	export let data;
+	console.log('Genre', { data.genres[0].name });
+
 </script>
 
 <svelte:head>
