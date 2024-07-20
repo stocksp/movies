@@ -1,68 +1,67 @@
 <script>
-	import { goto } from '$app/navigation';
-	import {
-		Container,
-		Card,
-		CardBody,
-		CardFooter,
-		CardHeader,
-		CardSubtitle,
-		CardText,
-		Row,
-		Col,
-		CardTitle,
-		Pagination,
-		PaginationItem,
-		PaginationLink
-	} from '@sveltestrap/sveltestrap';
+    import { goto } from '$app/navigation';
+    import {
+        Container,
+        Card,
+        CardBody,
+        CardFooter,
+        CardHeader,
+        CardSubtitle,
+        CardText,
+        Row,
+        Col,
+        CardTitle,
+        Pagination,
+        PaginationItem,
+        PaginationLink
+    } from '@sveltestrap/sveltestrap';
 
-	/** @type {{
-      movieData: Array<{
-        title: string;
-        release_date: string;
-        runtime: string;
-        overview: string;
-        poster: string | null;
-        id: number;
-      }>;
-      pagination: {
-        currentPage: number;
-        totalPages: number;
-        pageSize: number;
-        totalCount: number;
-      };
+    /** @type {{
+        movieData: Array<{
+            title: string;
+            release_date: string;
+            runtime: string;
+            overview: string;
+            poster: string | null;
+            id: number;
+        }>;
+        pagination: {
+            currentPage: number;
+            totalPages: number;
+            pageSize: number;
+            totalCount: number;
+        };
+        genreNames: Array<{
+            id: number;
+            name: string;
+        }>;
     }} */
-	export let data;
+    export let data;
 
-	/**
-	 * Navigates to the movie page for the given movie ID.
-	 * @param {number} id - The ID of the movie to navigate to.
-	 */
-	function navigateToMovie(id) {
-		goto(`/movie/${id}`);
-	}
+    function navigateToMovie(id) {
+        goto(`/movie/${id}`);
+    }
 
-	/**
-	 * Changes the current page
-	 * @param {number} page - The page number to navigate to
-	 * @param {Event} event - The click event
-	 */
-	function changePage(page, event) {
-		event.preventDefault();
-		const currentUrl = new URL(window.location.href);
-		currentUrl.searchParams.set('page', page.toString());
-		goto(currentUrl.toString());
-	}
-	$: searchParams = new URLSearchParams(window.location.search);
-	$: currentName = searchParams.get('name') || '';
-	$: currentGenres = searchParams.getAll('genres');
-	$: totalResults = data.pagination.totalCount;
+    function changePage(page, event) {
+        event.preventDefault();
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('page', page.toString());
+        goto(currentUrl.toString());
+    }
+
+    $: searchParams = new URLSearchParams(window.location.search);
+    $: currentName = searchParams.get('name') || '';
+    $: currentGenreIds = searchParams.getAll('genres');
+    $: currentGenres = data.genreNames
+        .filter(genre => currentGenreIds.includes(genre.id.toString()))
+        .map(genre => genre.name);
+    $: totalResults = data.pagination.totalCount;
 </script>
 
 <h1>Search Results</h1>
 <p>Showing results for: {currentName}</p>
 {#if currentGenres.length > 0}
-	<p>Genres: {currentGenres.join(', ')}</p>
+    <p>Genres: {currentGenres.join(', ')}</p>
 {/if}
 <p>Total results: {totalResults}</p>
 

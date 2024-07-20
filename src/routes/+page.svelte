@@ -15,12 +15,7 @@
 	$: genres = data.genre.map(g => g.name);
 
 
-	/** @type {{
-    genre: {
-      id: number;
-      title: string;
-    };
-  }} */
+
 
 	/**
 	 * Handles the form submission
@@ -37,7 +32,7 @@
 	}
 	/** @type {{ genre: Array<{ id: number, name: string }> }} */
 	export let data;
-	console.log('Genre', data.genre[0].name);
+//	console.log('Genre', data.genre[0].name);
 
 </script>
 
