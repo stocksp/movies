@@ -12,27 +12,8 @@
 	let genrecount = '';
 
 	/** @type {string[]} */
-	const genres = [
-		'Adventure',
-		'Fantasy',
-		'Animation',
-		'Drama',
-		'Horror',
-		'Action',
-		'Comedy',
-		'History',
-		'Western',
-		'Thriller',
-		'Crime',
-		'Documentary',
-		'Science Fiction',
-		'Mystery',
-		'Music',
-		'Romance',
-		'Family',
-		'War',
-		'TV Movie'
-	];
+	$: genres = data.genre.map(g => g.name);
+
 
 	/** @type {{
     genre: {
@@ -54,8 +35,9 @@
 		selectedGenres.forEach((genre) => params.append('genres', genre));
 		goto(`/search?${params.toString()}`);
 	}
+	/** @type {{ genre: Array<{ id: number, name: string }> }} */
 	export let data;
-	console.log('Genre', { data.genres[0].name });
+	console.log('Genre', data.genre[0].name);
 
 </script>
 
@@ -74,8 +56,8 @@
 
 			<select name="genra" id="genra" multiple bind:value={selectedGenres}>
 				<option value="" disabled>--Choose a Genre--</option>
-				{#each genres as genre}
-					<option value={genre}>{genre}</option>
+				{#each data.genre as genre}
+					<option value={genre.id}>{genre.name}</option>
 				{/each}
 			</select>
 		</FormGroup>
