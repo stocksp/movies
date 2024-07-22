@@ -1,9 +1,34 @@
 <script>
 	import { page } from '$app/stores';
 	import logo from '$lib/images/svelte-logo.svg';
-	import github from '$lib/images/github.svg';
-</script>
+	import { Icon, Tooltip } from '@sveltestrap/sveltestrap';
+	
+	/** @type {{ branchName: string; commitHash: string; buildDate: string }} */
+	const buildInfo = import.meta.env.VITE_BUILD_INFO;
 
+	// Format commit hash to show only first 8 characters
+	const shortCommitHash = buildInfo.commitHash.slice(0, 8);
+
+	/**
+	 * Formats a date string into a more readable format
+	 * @param {string} dateString - The ISO date string to format
+	 * @returns {string} The formatted date string
+	 */
+	const formatDate = (dateString) => {
+		const date = new Date(dateString);
+		/** @type {Intl.DateTimeFormatOptions} */
+		const options = { 
+			month: 'short', 
+			day: 'numeric', 
+			hour: 'numeric', 
+			minute: '2-digit',
+			hour12: true
+		};
+		return date.toLocaleString('en-US', options);
+	};
+
+	const formattedBuildDate = formatDate(buildInfo.buildDate);
+</script>
 <header>
 	<div class="corner">
 		<a href="https://kit.svelte.dev">
@@ -29,9 +54,12 @@
 	</nav>
 
 	<div class="corner">
-		<a href="https://github.com/sveltejs/kit">
-			<img src={github} alt="GitHub" />
-		</a>
+		<Icon id="info" name="info-circle" />
+		<Tooltip target="info" placement="left">
+			<p>Branch: {buildInfo.branchName}</p>
+			<p>Commit: {shortCommitHash}</p>
+			<p>Build Date: {formattedBuildDate}</p>
+		</Tooltip>
 	</div>
 </header>
 
