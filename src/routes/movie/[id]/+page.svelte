@@ -46,7 +46,7 @@
 
 <h1>{data.movieDetails.title}</h1>
 <img src="data:image/jpeg;base64,{data.movieDetails.poster}" alt={data.movieDetails.title}  style="height: 25%; width: 25%;"/>
-<p>Released: {data.movieDetails.release_date}</p>
+<p>Released: {data.movieDetails.release_date.split(' ')[0]}</p>
 <p>Runtime: {data.movieDetails.runtime} minutes</p>
 <p>Overview: {data.movieDetails.overview}</p>
 
