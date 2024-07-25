@@ -1,6 +1,5 @@
 <script>
     import { goto } from '$app/navigation';
-	import { browser } from '$app/environment';
     import {
         Container,
         Card,
@@ -44,30 +43,18 @@
     }
 
     function changePage(page, event) {
-    if (browser) {
         event.preventDefault();
         const currentUrl = new URL(window.location.href);
         currentUrl.searchParams.set('page', page.toString());
         goto(currentUrl.toString());
     }
-}
 
-	let searchParams;
-let currentName = '';
-let currentGenreIds = [];
-let currentGenres = [];
-
-
-
-$: if (browser) {
-    searchParams = new URLSearchParams(window.location.search);
-    currentName = searchParams.get('name') || '';
-    currentGenreIds = searchParams.getAll('genres');
-    currentGenres = data.genreNames
+    $: searchParams = new URLSearchParams(window.location.search);
+    $: currentName = searchParams.get('name') || '';
+    $: currentGenreIds = searchParams.getAll('genres');
+    $: currentGenres = data.genreNames
         .filter(genre => currentGenreIds.includes(genre.id.toString()))
         .map(genre => genre.name);
-}
-
     $: totalResults = data.pagination.totalCount;
 </script>
 
