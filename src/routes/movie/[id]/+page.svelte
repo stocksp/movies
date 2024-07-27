@@ -47,7 +47,7 @@
 	async function getReview() {
 		showReviewButton = false;
 		isReviewLoading = true;
-		input.set(`Write a short review of the movie "${data.movieDetails.title}"`);
+		input.set(`Write a short review of the movie "${data.movieDetails.title}" released "${data.movieDetails.release_date}"`);
 		await handleSubmit();
 
 		while ($isLoading) {
