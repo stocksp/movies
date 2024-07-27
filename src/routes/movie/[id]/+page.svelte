@@ -114,5 +114,87 @@
 </div>
 
 <style>
-	/* ... existing styles ... */
+  .cast-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .actor-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 1px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .actor-info {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .actor-info h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .actor-info p {
+    margin: 2px 0 0 0;
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .actor-image {
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .actor-image img,
+  .placeholder-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+  }
+
+  .placeholder-image {
+    background-color: #ddd;
+  }
+
+  @media screen and (max-width: 390px) {
+    .actor-card {
+      height: 50px;
+    }
+
+    .actor-image {
+      width: 40px;
+      height: 40px;
+    }
+
+    .actor-info h3 {
+      font-size: 0.8rem;
+    }
+
+    .actor-info p {
+      font-size: 0.7rem;
+    }
+  }
 </style>
