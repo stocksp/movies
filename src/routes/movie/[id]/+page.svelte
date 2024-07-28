@@ -10,11 +10,16 @@
 
   let reviewText = data.movieDetails.review;
   let isLoading = false;
-  let updateForm;
-  let addForm;
+  /** @type {HTMLFormElement | null} */
+  let updateForm = null;
+  /** @type {HTMLFormElement | null} */
+  let addForm = null;
 
   const { input, handleSubmit, messages, isLoading: chatIsLoading } = useChat();
 
+  /**
+   * @param {number} id
+   */
   function navigateToActor(id) {
     goto(`/actor/${id}`);
   }
