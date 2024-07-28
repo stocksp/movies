@@ -1,119 +1,141 @@
 <script>
-	import { goto } from '$app/navigation';
-	import { Spinner, Button } from '@sveltestrap/sveltestrap';
-	import { useChat } from '@ai-sdk/svelte';
-	import { reviewCache } from '$lib/stores/reviewStore';
-	import { onMount } from 'svelte';
-	/** @type {{
-    movieDetails: {
-      title: string;
-      release_date: string;
-      overview: string;
-      runtime: number;
-      poster: string | null;
-    };
-    genres: Array<{ name: string }>;
-    cast: Array<{
-      id: number;
-      name: string;
-      character: string;
-      picture: string | null;
-      roles: number;
-    }>;
-  }} */
-	export let data;
-	/**
-	 * Navigates to the movie page for the given movie ID.
-	 * @param {number} id - The ID of the movie to navigate to.
-	 */
-	function navigateToActor(id) {
-		goto(`/actor/${id}`);
-	}
+  import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
+  import { Spinner, Button } from '@sveltestrap/sveltestrap';
+  import { useChat } from '@ai-sdk/svelte';
+  import { onMount } from 'svelte';
 
-	let review = '';
-	let showReviewButton = true;
-	let isReviewLoading = false;
+  /** @type {import('./$types').PageData} */
+  export let data;
 
-	const { input, handleSubmit, messages, isLoading } = useChat();
+  let reviewText = data.movieDetails.review;
+  let isLoading = false;
+  let updateForm;
+  let addForm;
 
-	onMount(() => {
-		const cachedReview = $reviewCache[data.movieDetails.title];
-		if (cachedReview) {
-			review = cachedReview;
-			showReviewButton = false;
-		}
-	});
+  const { input, handleSubmit, messages, isLoading: chatIsLoading } = useChat();
 
-	async function getReview() {
-		showReviewButton = false;
-		isReviewLoading = true;
-		input.set(`Write a short review of the movie "${data.movieDetails.title}" released "${data.movieDetails.release_date}"`);
-		await handleSubmit();
+  function navigateToActor(id) {
+    goto(`/actor/${id}`);
+  }
 
-		while ($isLoading) {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-		}
+  async function getReview() {
+    isLoading = true;
+    input.set(`Write a short review of the movie "${data.movieDetails.title}" released "${data.movieDetails.release_date}"`);
+    await handleSubmit();
 
-		review = $messages[$messages.length - 1].content;
-		reviewCache.update((cache) => ({ ...cache, [data.movieDetails.title]: review }));
-		isReviewLoading = false;
-	}
+    while ($chatIsLoading) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    reviewText = $messages[$messages.length - 1].content;
+    isLoading = false;
+  }
+
+  async function handleAddReview() {
+    if (!reviewText) {
+      await getReview();
+    }
+    if (addForm) {
+      addForm.submit();
+    }
+  }
+
+  async function handleUpdateReview() {
+    await getReview();
+    if (updateForm) {
+      updateForm.submit();
+    }
+  }
 </script>
 
 <h1>{data.movieDetails.title}</h1>
 <img
-	src="data:image/jpeg;base64,{data.movieDetails.poster}"
-	alt={data.movieDetails.title}
-	style="height: 25%; width: 25%;"
+  src="data:image/jpeg;base64,{data.movieDetails.poster}"
+  alt={data.movieDetails.title}
+  style="height: 25%; width: 25%;"
 />
 <p>Released: {data.movieDetails.release_date.split(' ')[0]}</p>
 <p>Runtime: {data.movieDetails.runtime} minutes</p>
 <p>Overview: {data.movieDetails.overview}</p>
 
-{#if showReviewButton}
-	<Button color="primary" on:click={getReview}>Get Review</Button>
+{#if data.movieDetails.review}
+  <h2>Review</h2>
+  <p>{data.movieDetails.review}</p>
 {/if}
 
-{#if isReviewLoading}
-    <p>
-        Loading review... <Spinner type="border" color="primary" size="sm" />
-    </p>
-{:else if review}
-    <p>Review: {review}</p>
+<div class="button-container">
+  {#if data.movieDetails.review}
+    <form method="POST" action="?/updateReview" use:enhance bind:this={updateForm} class="button-form">
+      <input type="hidden" name="review" bind:value={reviewText}>
+      <Button type="button" on:click={handleUpdateReview} disabled={isLoading} color="primary" block>Update Review</Button>
+    </form>
+    <form method="POST" action="?/removeReview" use:enhance class="button-form">
+      <Button type="submit" disabled={isLoading} color="danger" block>Remove Review</Button>
+    </form>
+  {:else}
+    <form method="POST" action="?/addReview" use:enhance bind:this={addForm} class="button-form">
+      <input type="hidden" name="review" bind:value={reviewText}>
+      <Button type="button" on:click={handleAddReview} disabled={isLoading} color="success" block>Add Review</Button>
+    </form>
+  {/if}
+</div>
+
+{#if isLoading}
+  <div class="spinner-container">
+    <Spinner color="primary" />
+  </div>
 {/if}
 
 <h2>Genres</h2>
 <ul>
-	{#each data.genres as genre}
-		<li>{genre.name}</li>
-	{/each}
+  {#each data.genres as genre}
+    <li>{genre.name}</li>
+  {/each}
 </ul>
 
 <h2>Cast</h2>
 <div class="cast-list">
-	{#each data.cast as actor}
-		<a
-			href="/actor/{actor.id}"
-			class="actor-card"
-			on:click|preventDefault={() => navigateToActor(actor.id)}
-		>
-			<div class="actor-info">
-				<h3>{actor.name}</h3>
-				<p>as {actor.character}</p>
-				<p>Total roles: {actor.roles}</p>
-			</div>
-			<div class="actor-image">
-				{#if actor.picture}
-					<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
-				{:else}
-					<div class="placeholder-image"></div>
-				{/if}
-			</div>
-		</a>
-	{/each}
+  {#each data.cast as actor}
+    <a
+      href="/actor/{actor.id}"
+      class="actor-card"
+      on:click|preventDefault={() => navigateToActor(actor.id)}
+    >
+      <div class="actor-info">
+        <h3>{actor.name}</h3>
+        <p>as {actor.character}</p>
+        <p>Total roles: {actor.roles}</p>
+      </div>
+      <div class="actor-image">
+        {#if actor.picture}
+          <img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
+        {:else}
+          <div class="placeholder-image"></div>
+        {/if}
+      </div>
+    </a>
+  {/each}
 </div>
 
 <style>
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .button-form {
+    flex: 1;
+  }
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
   .cast-list {
     display: flex;
     flex-direction: column;

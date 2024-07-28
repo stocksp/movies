@@ -2,12 +2,14 @@
 import { turso } from '$lib/server/turso';
 import { movieCache } from '$lib/stores/movieStore';
 import { get } from 'svelte/store';
+import { fail } from '@sveltejs/kit';
 
 /**
  * @typedef {Object} MovieDetails
  * @property {string} title
  * @property {string} release_date
  * @property {string} overview
+ * @property {string} review
  * @property {number} runtime
  * @property {string|null} poster
  */
@@ -80,7 +82,7 @@ export async function load({ params }) {
 async function fetchMovieDetails(movieId) {
   return await turso.execute({
     sql: `
-      select m.title, m.release_date, m.overview, m.runtime, m.poster
+      select m.title, m.release_date, m.overview, m.review, m.runtime, m.poster
       from movies m
       where m.id = ?
     `,
@@ -133,6 +135,7 @@ function serializeMovieDetails(rows) {
     title: record.title,
     release_date: record.release_date,
     overview: record.overview,
+    review: record.review,
     runtime: record.runtime,
     poster: record.poster ? Buffer.from(record.poster).toString('base64') : null
   }));
@@ -161,3 +164,85 @@ function serializeCast(rows) {
     roles: record.roles
   }));
 }
+
+/** @type {import('./$types').Actions} */
+export const actions = {
+  addReview: async ({ params, request }) => {
+    const formData = await request.formData();
+    const review = formData.get('review');
+    const movieId = params.id;
+
+    if (typeof review !== 'string' || review.length === 0) {
+      return fail(400, { review, missing: true });
+    }
+
+    await turso.execute({
+      sql: `
+        UPDATE movies
+        SET review = ?
+        WHERE id = ?
+      `,
+      args: [review, movieId],
+    });
+
+    // Clear the cache for this movie
+    movieCache.update(cache => {
+      const updatedCache = { ...cache };
+      delete updatedCache[movieId];
+      return updatedCache;
+    });
+
+    return { success: true };
+  },
+
+  updateReview: async ({ params, request }) => {
+    const formData = await request.formData();
+    const review = formData.get('review');
+    const movieId = params.id;
+
+    if (typeof review !== 'string' || review.length === 0) {
+      return fail(400, { review, missing: true });
+    }
+
+    await turso.execute({
+      sql: `
+        UPDATE movies
+        SET review = ?
+        WHERE id = ?
+      `,
+      args: [review, movieId],
+    });
+
+    // Clear the cache for this movie
+    movieCache.update(cache => {
+      const updatedCache = { ...cache };
+      delete updatedCache[movieId];
+      return updatedCache;
+    });
+
+    return { success: true };
+  },
+
+  removeReview: async ({ params }) => {
+    const movieId = params.id;
+
+    await turso.execute({
+      sql: `
+        UPDATE movies
+        SET review = NULL
+        WHERE id = ?
+      `,
+      args: [movieId],
+    });
+
+    // Clear the cache for this movie
+    movieCache.update(cache => {
+      const updatedCache = { ...cache };
+      delete updatedCache[movieId];
+      return updatedCache;
+    });
+
+    return { success: true };
+  }
+};
+
