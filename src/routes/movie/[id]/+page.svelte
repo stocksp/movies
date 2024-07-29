@@ -65,8 +65,7 @@
 <p>Overview: {data.movieDetails.overview}</p>
 
 {#if data.movieDetails.review}
-  <h2>Review</h2>
-  <p>{data.movieDetails.review}</p>
+  <p>Review: {data.movieDetails.review}</p>
 {/if}
 
 <div class="button-container">
