@@ -1,8 +1,18 @@
-export async function handle({ event, resolve }) {
-    const response = await resolve(event);
-    response.headers.set('Access-Control-Allow-Origin', 'https://movies.stocks1.dev/');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    return response;
+import adapter from '@sveltejs/adapter-auto';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
+
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+  preprocess: vitePreprocess(),
+  kit: {
+    adapter: adapter(),
+    alias: {
+      $lib: './src/lib'
+    },
+    csrf: {
+      checkOrigin: true
+    }
   }
+};
+
+export default config;

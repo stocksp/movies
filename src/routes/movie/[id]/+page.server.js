@@ -40,33 +40,38 @@ import { fail } from '@sveltejs/kit';
  * @param {{ params: { id: string } }} event
  * @returns {Promise<MovieData>}
  */
-export async function load({ params }) {
+// @ts-ignore
+export async function load({ params, locals }) {
   const movieId = params.id;
   const cachedMovies = get(movieCache);
 
+  let result;
   // Check if the movie data is already in the cache
   if (cachedMovies[movieId]) {
-    return /** @type {MovieData} */ (cachedMovies[movieId]);
+    result = cachedMovies[movieId];
+  } else {
+    // If not in cache, fetch the data
+    const [movieDetails, genres, cast] = await Promise.all([
+      fetchMovieDetails(movieId),
+      fetchGenres(movieId),
+      fetchCast(movieId)
+    ]);
+
+    // Serialize the data
+    const serializedMovieDetails = serializeMovieDetails(movieDetails.rows);
+    const serializedGenres = serializeGenres(genres.rows);
+    const serializedCast = serializeCast(cast.rows);
+
+    // Prepare the result
+    result = /** @type {MovieData} */ ({
+      movieDetails: serializedMovieDetails[0],
+      genres: serializedGenres,
+      cast: serializedCast
+    });
   }
 
-  // If not in cache, fetch the data
-  const [movieDetails, genres, cast] = await Promise.all([
-    fetchMovieDetails(movieId),
-    fetchGenres(movieId),
-    fetchCast(movieId)
-  ]);
 
-  // Serialize the data
-  const serializedMovieDetails = serializeMovieDetails(movieDetails.rows);
-  const serializedGenres = serializeGenres(genres.rows);
-  const serializedCast = serializeCast(cast.rows);
 
-  // Prepare the result
-  const result = /** @type {MovieData} */ ({
-    movieDetails: serializedMovieDetails[0],
-    genres: serializedGenres,
-    cast: serializedCast
-  });
 
   // Update the cache
   movieCache.update(cache => ({ ...cache, [movieId]: result }));
@@ -167,8 +172,13 @@ function serializeCast(rows) {
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-  addReview: async ({ params, request }) => {
+  addReview: async ({ params, request, locals }) => {
     const formData = await request.formData();
+    const csrf = formData.get('csrf');
+    // @ts-ignore
+    if (!locals.validateCSRFToken(csrf)) {
+      return fail(403, { error: 'CSRF token is invalid' });
+    }
     const review = formData.get('review');
     const movieId = params.id;
 
