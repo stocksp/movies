@@ -40,8 +40,7 @@ import { fail } from '@sveltejs/kit';
  * @param {{ params: { id: string } }} event
  * @returns {Promise<MovieData>}
  */
-// @ts-ignore
-export async function load({ params, locals }) {
+export async function load({ params }) {
   const movieId = params.id;
   const cachedMovies = get(movieCache);
 
@@ -69,9 +68,6 @@ export async function load({ params, locals }) {
       cast: serializedCast
     });
   }
-
-
-
 
   // Update the cache
   movieCache.update(cache => ({ ...cache, [movieId]: result }));
@@ -172,13 +168,8 @@ function serializeCast(rows) {
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-  addReview: async ({ params, request, locals }) => {
+  addReview: async ({ params, request }) => {
     const formData = await request.formData();
-    const csrf = formData.get('csrf');
-    // @ts-ignore
-    if (!locals.validateCSRFToken(csrf)) {
-      return fail(403, { error: 'CSRF token is invalid' });
-    }
     const review = formData.get('review');
     const movieId = params.id;
 
@@ -186,21 +177,8 @@ export const actions = {
       return fail(400, { review, missing: true });
     }
 
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = ?
-        WHERE id = ?
-      `,
-      args: [review, movieId],
-    });
-
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
+    await updateMovieReview(movieId, review);
+    clearMovieCache(movieId);
 
     return { success: true };
   },
@@ -214,21 +192,8 @@ export const actions = {
       return fail(400, { review, missing: true });
     }
 
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = ?
-        WHERE id = ?
-      `,
-      args: [review, movieId],
-    });
-
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
+    await updateMovieReview(movieId, review);
+    clearMovieCache(movieId);
 
     return { success: true };
   },
@@ -236,23 +201,35 @@ export const actions = {
   removeReview: async ({ params }) => {
     const movieId = params.id;
 
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = NULL
-        WHERE id = ?
-      `,
-      args: [movieId],
-    });
-
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
+    await updateMovieReview(movieId, null);
+    clearMovieCache(movieId);
 
     return { success: true };
   }
 };
 
+/**
+ * @param {string} movieId
+ * @param {string|null} review
+ */
+async function updateMovieReview(movieId, review) {
+  await turso.execute({
+    sql: `
+      UPDATE movies
+      SET review = ?
+      WHERE id = ?
+    `,
+    args: [review, movieId],
+  });
+}
+
+/**
+ * @param {string} movieId
+ */
+function clearMovieCache(movieId) {
+  movieCache.update(cache => {
+    const updatedCache = { ...cache };
+    delete updatedCache[movieId];
+    return updatedCache;
+  });
+}
