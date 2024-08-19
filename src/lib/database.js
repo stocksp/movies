@@ -1,5 +1,5 @@
 // src/lib/database.js
-import { turso } from '$lib/server/turso';
+import { mysql } from '$lib/server/mysql';
 
 /**
  * @param {string} movieId
@@ -7,14 +7,19 @@ import { turso } from '$lib/server/turso';
  * @returns {Promise<import('@libsql/client').ResultSet>}
  */
 export async function updateReview(movieId, review) {
-  return await turso.execute({
-    sql: `
+	try {
+		return await mysql.query({
+			sql: `
       UPDATE movies
       SET review = ?
       WHERE id = ?
     `,
-    args: [review, movieId],
-  });
+			args: [review, movieId]
+		});
+	} catch (error) {
+		console.error('Database query failed:', error);
+		ResultSet: null;
+	}
 }
 
 /**
@@ -22,12 +27,17 @@ export async function updateReview(movieId, review) {
  * @returns {Promise<import('@libsql/client').ResultSet>}
  */
 export async function removeReview(movieId) {
-  return await turso.execute({
-    sql: `
+	try {
+		return await mysql.query({
+			sql: `
       UPDATE movies
       SET review = NULL
       WHERE id = ?
     `,
-    args: [movieId],
-  });
+			args: [movieId]
+		});
+	} catch (error) {
+		console.error('Database query failed:', error);
+		ResultSet: null;
+	}
 }

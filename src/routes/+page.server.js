@@ -9,18 +9,25 @@ import { mysql } from '$lib/server/mysql';
  * @returns {Promise<{ genre: Genre[] }>}
  */
 export async function load() {
-    const [rows] = await mysql.query({
-        sql: `SELECT g.id, g.name FROM genre g`,
-        args: [],
-    });
+	try {
+		const [rows] = await mysql.query({
+			sql: `SELECT g.id, g.name FROM genre g`,
+			args: []
+		});
 
-    /** @type {Genre[]} */
-    const genres = rows.map(row => ({
-        id: Number(row.id),
-        name: String(row.name)
-    }));
+		/** @type {Genre[]} */
+		const genres = rows.map((row) => ({
+			id: Number(row.id),
+			name: String(row.name)
+		}));
 
-    return {
-        genre: genres
-    };
+		return {
+			genre: genres
+		};
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			genre: []
+		};
+	}
 }
