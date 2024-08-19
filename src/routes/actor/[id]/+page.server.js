@@ -1,41 +1,58 @@
 // @ts-nocheck
 // src/routes/+page.server.js
-import { turso } from '$lib/server/turso';
+import { mysql } from '$lib/server/mysql';
 
 export async function load({ params }) {
-	const actorId = params.id; // Assuming the movie ID is passed as a route parameter
+	try {
+		const actorId = params.id; // Assuming the actor ID is passed as a route parameter
 
-	// Query 1: Actor details
-	const actorDetails = await turso.execute({
-		sql: `
-          select a.name, substr(a.birthday, 0, instr(a.birthday, ' ')) as birthday, substr(a.deathday, 0, instr(a.deathday, ' ')) as deathday, a.birthplace, a.biography, a.picture
-          from actors a
-          where a.id = ?
+		// Query 1: Actor details
+		const [actorDetails] = await mysql.query(
+			`
+        SELECT 
+            a.name, 
+            substr(a.birthday, 1, instr(a.birthday, ' ') -1) as birthday, 
+            substr(a.deathday, 1, instr(a.deathday, ' ') -1) as deathday, 
+            a.birthplace, 
+            a.biography, 
+            a.picture
+        FROM actors a
+        WHERE a.id = ?
     `,
-		args: [actorId]
-	});
+			[actorId]
+		);
 
-	// Query 2: Roles
-	const roles = await turso.execute({
-		sql: `
-           select c.character, m.id as movieId, m.title, substr(m.release_date, 0, instr(m.release_date, ' ')) as releasedate
-         from cast c
-         join movies m on m.id = c.movieid
-         where c.actorid = ?
-         order by substr(m.release_date, instr(m.release_date, ' ') -4, 4)
+		// Query 2: Roles
+		const [roles] = await mysql.query(
+			`
+        SELECT 
+            c.character, 
+            m.id as movieId, 
+            m.title, 
+            substr(m.release_date, 1, instr(m.release_date, ' ')) as releasedate
+        FROM cast c
+        JOIN movies m ON m.id = c.movieid
+        WHERE c.actorid = ?
+        ORDER BY substr(m.release_date, instr(m.release_date, ' ') -4, 4)
     `,
-		args: [actorId]
-	});
+			[actorId]
+		);
 
-	// Serialize the data
-	const serializedactorDetails = actorDetails.rows.map((record) => ({
-		...record,
-		picture: record.picture ? Buffer.from(record.picture).toString('base64') : null
-	}));
+		// Serialize the data
+		const serializedActorDetails = actorDetails.map((record) => ({
+			...record,
+			picture: record.picture ? Buffer.from(record.picture).toString('base64') : null
+		}));
 
-	// Return the data
-	return {
-		actorDetails: serializedactorDetails[0], // Assuming there's only one actor
-		roles: roles.rows
-	};
+		// Return the data
+		return {
+			actorDetails: serializedActorDetails[0], // Assuming there's only one actor
+			roles: roles
+		};
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			roles: []
+		};
+	}
 }
