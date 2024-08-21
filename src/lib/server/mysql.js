@@ -5,7 +5,7 @@ import { MYSQLPW } from '$env/static/private';
 export const mysql = await mysql2.createConnection(
   {
     host: 'localhost',
-    user: 'root',
+    user: 'cap',
     database: 'videos',
     password: MYSQLPW
   }
