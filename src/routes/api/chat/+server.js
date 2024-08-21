@@ -1,6 +1,7 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { StreamingTextResponse, streamText } from 'ai';
 
+// @ts-ignore
 import { OPENAI_API_KEY } from '$env/static/private';
 console.log('key', OPENAI_API_KEY)
 const openai = createOpenAI({

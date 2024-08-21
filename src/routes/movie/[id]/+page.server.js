@@ -1,129 +1,109 @@
 // src/routes/movie/[id]/+page.server.js
-import { turso } from '$lib/server/turso';
+import { mysql } from '$lib/server/mysql';
 import { movieCache } from '$lib/stores/movieStore';
 import { get } from 'svelte/store';
 import { fail } from '@sveltejs/kit';
 
-/**
- * @typedef {Object} MovieDetails
- * @property {string} title
- * @property {string} release_date
- * @property {string} overview
- * @property {string} review
- * @property {number} runtime
- * @property {string|null} poster
- */
+// ... (keep all type definitions as they are)
 
-/**
- * @typedef {Object} Genre
- * @property {string} name
- */
-
-/**
- * @typedef {Object} CastMember
- * @property {number} id
- * @property {string} name
- * @property {string} character
- * @property {string|null} picture
- * @property {number} roles
- */
-
-/**
- * @typedef {Object} MovieData
- * @property {MovieDetails} movieDetails
- * @property {Genre[]} genres
- * @property {CastMember[]} cast
- */
-
-/**
- * Load function for the movie page
- * @param {{ params: { id: string } }} event
- * @returns {Promise<MovieData>}
- */
 export async function load({ params }) {
-  const movieId = params.id;
-  const cachedMovies = get(movieCache);
+	try {
+		const movieId = params.id;
+		const cachedMovies = get(movieCache);
 
-  // Check if the movie data is already in the cache
-  if (cachedMovies[movieId]) {
-    return /** @type {MovieData} */ (cachedMovies[movieId]);
-  }
+		let result;
+		if (cachedMovies[movieId]) {
+			result = cachedMovies[movieId];
+		} else {
+			const [movieDetails, genres, cast] = await Promise.all([
+				fetchMovieDetails(movieId),
+				fetchGenres(movieId),
+				fetchCast(movieId)
+			]);
 
-  // If not in cache, fetch the data
-  const [movieDetails, genres, cast] = await Promise.all([
-    fetchMovieDetails(movieId),
-    fetchGenres(movieId),
-    fetchCast(movieId)
-  ]);
+			const serializedMovieDetails = serializeMovieDetails(movieDetails);
+			const serializedGenres = serializeGenres(genres);
+			const serializedCast = serializeCast(cast);
 
-  // Serialize the data
-  const serializedMovieDetails = serializeMovieDetails(movieDetails.rows);
-  const serializedGenres = serializeGenres(genres.rows);
-  const serializedCast = serializeCast(cast.rows);
+			result = /** @type {MovieData} */ ({
+				movieDetails: serializedMovieDetails[0],
+				genres: serializedGenres,
+				cast: serializedCast
+			});
+		}
 
-  // Prepare the result
-  const result = /** @type {MovieData} */ ({
-    movieDetails: serializedMovieDetails[0],
-    genres: serializedGenres,
-    cast: serializedCast
-  });
+		movieCache.update((cache) => ({ ...cache, [movieId]: result }));
 
-  // Update the cache
-  movieCache.update(cache => ({ ...cache, [movieId]: result }));
-
-  // Return the data
-  return result;
+		return result;
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			result: []
+		};
+	}
 }
 
-/**
- * @param {string} movieId
- * @returns {Promise<import('@libsql/client').ResultSet>}
- */
 async function fetchMovieDetails(movieId) {
-  return await turso.execute({
-    sql: `
-      select m.title, m.release_date, m.overview, m.review, m.runtime, m.poster
-      from movies m
-      where m.id = ?
-    `,
-    args: [movieId],
-  });
+	try {
+		const [rows] = await mysql.query(
+			`
+    SELECT m.title, m.release_date, m.overview, m.review, m.runtime, m.poster
+    FROM movies m
+    WHERE m.id = ?
+  `,
+			[movieId]
+		);
+		return rows;
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			rows: []
+		};
+	}
 }
 
-/**
- * @param {string} movieId
- * @returns {Promise<import('@libsql/client').ResultSet>}
- */
 async function fetchGenres(movieId) {
-  return await turso.execute({
-    sql: `
-      select g.name from
-      movies m
-      join genres gs on gs.movieid = m.id
-      join genre g on g.id = gs.genreid
-      where m.id = ?
-    `,
-    args: [movieId],
-  });
+	try {
+		const [rows] = await mysql.query(
+			`
+    SELECT g.name FROM
+    movies m
+    JOIN genres gs ON gs.movieid = m.id
+    JOIN genre g ON g.id = gs.genreid
+    WHERE m.id = ?
+  `,
+			[movieId]
+		);
+		return rows;
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			rows: []
+		};
+	}
 }
 
-/**
- * @param {string} movieId
- * @returns {Promise<import('@libsql/client').ResultSet>}
- */
 async function fetchCast(movieId) {
-  return await turso.execute({
-    sql: `
-      select a.id, a.name, c.character, a.picture,
-      (select count(*) from cast where actorid = c.actorid) as roles
-      from movies m
-      join cast c on c.movieid = m.id
-      join actors a on a.id = c.actorid
-      where m.id = ?
-      order by roles desc
-    `,
-    args: [movieId],
-  });
+	try {
+		const [rows] = await mysql.query(
+			`
+    SELECT a.id, a.name, c.character, a.picture,
+    (SELECT COUNT(*) FROM cast WHERE actorid = c.actorid) AS roles
+    FROM movies m
+    JOIN cast c ON c.movieid = m.id
+    JOIN actors a ON a.id = c.actorid
+    WHERE m.id = ?
+    ORDER BY roles DESC
+  `,
+			[movieId]
+		);
+		return rows;
+	} catch (error) {
+		console.error('Database query failed:', error);
+		return {
+			rows: []
+		};
+	}
 }
 
 /**
@@ -131,14 +111,14 @@ async function fetchCast(movieId) {
  * @returns {MovieDetails[]}
  */
 function serializeMovieDetails(rows) {
-  return rows.map(record => ({
-    title: record.title,
-    release_date: record.release_date,
-    overview: record.overview,
-    review: record.review,
-    runtime: record.runtime,
-    poster: record.poster ? Buffer.from(record.poster).toString('base64') : null
-  }));
+	return rows.map((record) => ({
+		title: record.title,
+		release_date: record.release_date,
+		overview: record.overview,
+		review: record.review,
+		runtime: record.runtime,
+		poster: record.poster ? Buffer.from(record.poster).toString('base64') : null
+	}));
 }
 
 /**
@@ -146,9 +126,9 @@ function serializeMovieDetails(rows) {
  * @returns {Genre[]}
  */
 function serializeGenres(rows) {
-  return rows.map(record => ({
-    name: record.name
-  }));
+	return rows.map((record) => ({
+		name: record.name
+	}));
 }
 
 /**
@@ -156,93 +136,75 @@ function serializeGenres(rows) {
  * @returns {CastMember[]}
  */
 function serializeCast(rows) {
-  return rows.map(record => ({
-    id: record.id,
-    name: record.name,
-    character: record.character,
-    picture: record.picture ? Buffer.from(record.picture).toString('base64') : null,
-    roles: record.roles
-  }));
+	return rows.map((record) => ({
+		id: record.id,
+		name: record.name,
+		character: record.character,
+		picture: record.picture ? Buffer.from(record.picture).toString('base64') : null,
+		roles: record.roles
+	}));
 }
 
-/** @type {import('./$types').Actions} */
 export const actions = {
-  addReview: async ({ params, request }) => {
-    const formData = await request.formData();
-    const review = formData.get('review');
-    const movieId = params.id;
+	addReview: async ({ params, request }) => {
+		const formData = await request.formData();
+		const review = formData.get('review');
+		const movieId = params.id;
 
-    if (typeof review !== 'string' || review.length === 0) {
-      return fail(400, { review, missing: true });
-    }
+		if (typeof review !== 'string' || review.length === 0) {
+			return fail(400, { review, missing: true });
+		}
 
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = ?
-        WHERE id = ?
-      `,
-      args: [review, movieId],
-    });
+		await updateMovieReview(movieId, review);
+		clearMovieCache(movieId);
 
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
+		return { success: true };
+	},
 
-    return { success: true };
-  },
+	updateReview: async ({ params, request }) => {
+		const formData = await request.formData();
+		const review = formData.get('review');
+		const movieId = params.id;
 
-  updateReview: async ({ params, request }) => {
-    const formData = await request.formData();
-    const review = formData.get('review');
-    const movieId = params.id;
+		if (typeof review !== 'string' || review.length === 0) {
+			return fail(400, { review, missing: true });
+		}
 
-    if (typeof review !== 'string' || review.length === 0) {
-      return fail(400, { review, missing: true });
-    }
+		await updateMovieReview(movieId, review);
+		clearMovieCache(movieId);
 
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = ?
-        WHERE id = ?
-      `,
-      args: [review, movieId],
-    });
+		return { success: true };
+	},
 
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
+	removeReview: async ({ params }) => {
+		const movieId = params.id;
 
-    return { success: true };
-  },
+		await updateMovieReview(movieId, null);
+		clearMovieCache(movieId);
 
-  removeReview: async ({ params }) => {
-    const movieId = params.id;
-
-    await turso.execute({
-      sql: `
-        UPDATE movies
-        SET review = NULL
-        WHERE id = ?
-      `,
-      args: [movieId],
-    });
-
-    // Clear the cache for this movie
-    movieCache.update(cache => {
-      const updatedCache = { ...cache };
-      delete updatedCache[movieId];
-      return updatedCache;
-    });
-
-    return { success: true };
-  }
+		return { success: true };
+	}
 };
 
+async function updateMovieReview(movieId, review) {
+	try {
+		await mysql.query(
+			`
+    UPDATE movies
+    SET review = ?
+    WHERE id = ?
+  `,
+			[review, movieId]
+		);
+	} catch (error) {
+		console.error('Database query failed:', error);
+	}
+}
+
+function clearMovieCache(movieId) {
+	movieCache.update((cache) => {
+		const updatedCache = { ...cache };
+		delete updatedCache[movieId];
+		return updatedCache;
+	});
+}

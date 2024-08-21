@@ -36,6 +36,7 @@
 		"@libsql/client": "^0.7.0",
 		"@sveltestrap/sveltestrap": "^6.2.7",
 		"ai": "^3.2.37",
+		"mysql2": "^3.11.0",
 		"zod": "^3.23.8"
 	}
 }
