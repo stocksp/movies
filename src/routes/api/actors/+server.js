@@ -10,8 +10,8 @@ export async function GET({ url }) {
   if (search.length >= 3) {
     try {
       const [results] = await mysql.query(
-'SELECT id, name FROM actors WHERE name LIKE ?',
-[search]);
+        'SELECT id, name FROM actors WHERE name LIKE ?',
+        [search]);
       return json(results);
     } catch (error) {
       console.error('Error querying database:', error);

@@ -3,9 +3,9 @@
 import { mysql } from '$lib/server/mysql';
 
 export async function load({ url }) {
-  console.log("whaaaa");
-  const search = url.searchParams.get('search') || '';
 
+  const search = url.searchParams.get('search') || '';
+  console.log('search', search)
   if (search.length >= 3) {
     const query = 'SELECT id, name FROM actors WHERE name LIKE ?';
     const values = [`${search}%`];
