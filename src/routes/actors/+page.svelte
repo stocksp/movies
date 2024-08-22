@@ -3,8 +3,8 @@
 
 	let searchTerm = '';
 	let actors = [];
+	let fullWildcard = false;
 
-	// Watch for changes in searchTerm and call searchActors accordingly.
 	$: if (searchTerm.length >= 3) {
 		searchActors();
 	} else {
@@ -12,10 +12,12 @@
 	}
 
 	async function searchActors() {
-		console.log('Searching for:', searchTerm);  // Log the current searchTerm
+		console.log('Searching for:', searchTerm, 'with fullWildcard:', fullWildcard);
 
-		const response = await fetch(`/api/actors?search=${encodeURIComponent(searchTerm)}`);
-		
+		const response = await fetch(
+			`/api/actors?search=${encodeURIComponent(searchTerm)}&fullWildcard=${fullWildcard}`
+		);
+
 		if (response.ok) {
 			actors = await response.json();
 			console.log('Fetched actors:', actors);
@@ -30,14 +32,28 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Actor Search</title>
+</svelte:head>
+
 <main>
 	<h1>Actor Search</h1>
-	<input
-		type="text"
-		bind:value={searchTerm}
-		placeholder="Enter actor name"
-		on:input={() => console.log('Current input:', searchTerm)}
-	/>
+	<div class="input-group">
+		<input
+			type="text"
+			bind:value={searchTerm}
+			placeholder="Enter actor name"
+			on:input={() => console.log('Current input:', searchTerm)}
+		/>
+		<label class="checkbox-container">
+			<input
+				type="checkbox"
+				bind:checked={fullWildcard}
+				on:change={() => searchTerm.length >= 3 && searchActors()}
+			/>
+			Full Wildcard
+		</label>
+	</div>
 
 	{#if actors.length > 0}
 		<ul>
@@ -61,10 +77,21 @@
 		padding: 20px;
 	}
 
-	input {
-		width: 100%;
+	.input-group {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	input[type='text'] {
+		flex-grow: 1;
 		padding: 10px;
 		font-size: 16px;
+	}
+
+	.checkbox-container {
+		display: flex;
+		align-items: center;
 	}
 
 	ul {
@@ -82,7 +109,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		padding: 10px;
+		padding: 5px;
 		font-size: 16px;
 		border-bottom: 1px solid #ccc;
 	}

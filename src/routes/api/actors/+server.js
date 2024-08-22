@@ -1,25 +1,30 @@
-// @ts-nocheck
 // src/routes/api/actors/+server.js
 import { json } from '@sveltejs/kit';
 import { mysql } from '$lib/server/mysql';
 
 export async function GET({ url }) {
-  const search = url.searchParams.get('search') || '';
+	const search = url.searchParams.get('search') || '';
+	const fullWildcard = url.searchParams.get('fullWildcard') === 'true';
 
-  console.log('Doing it:', search);
+	let searchTerm = `${search}%`; // Default is wildcard at the end
 
-  if (search.length >= 3) {
-    try {
-      const searchTerm = `${search}%`; // Add wildcard to the end of the search term
-      const [results] = await mysql.query(
-        'SELECT id, name FROM actors WHERE name LIKE ?',
-        [searchTerm]);
-      return json(results);
-    } catch (error) {
-      console.error('Error querying database:', error);
-      return json([]);
-    }
-  }
+	if (fullWildcard) {
+		searchTerm = `%${search}%`; // Add wildcards to both ends
+	}
 
-  return json([]);
+	//console.log('Doing it:', searchTerm);
+
+	if (search.length >= 3) {
+		try {
+			const [results] = await mysql.query('SELECT id, name FROM actors WHERE name LIKE ?', [
+				searchTerm
+			]);
+			return json(results);
+		} catch (error) {
+			console.error('Error querying database:', error);
+			return json([]);
+		}
+	}
+
+	return json([]);
 }
