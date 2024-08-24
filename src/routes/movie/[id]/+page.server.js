@@ -1,6 +1,5 @@
 // src/routes/movie/[id]/+page.server.js
 import { mysql } from '$lib/server/mysql';
-import { movieCache } from '$lib/stores/movieStore';
 import { get } from 'svelte/store';
 import { fail } from '@sveltejs/kit';
 
@@ -9,30 +8,23 @@ import { fail } from '@sveltejs/kit';
 export async function load({ params }) {
 	try {
 		const movieId = params.id;
-		const cachedMovies = get(movieCache);
 
 		let result;
-		if (cachedMovies[movieId]) {
-			result = cachedMovies[movieId];
-		} else {
-			const [movieDetails, genres, cast] = await Promise.all([
-				fetchMovieDetails(movieId),
-				fetchGenres(movieId),
-				fetchCast(movieId)
-			]);
+		const [movieDetails, genres, cast] = await Promise.all([
+			fetchMovieDetails(movieId),
+			fetchGenres(movieId),
+			fetchCast(movieId)
+		]);
 
-			const serializedMovieDetails = serializeMovieDetails(movieDetails);
-			const serializedGenres = serializeGenres(genres);
-			const serializedCast = serializeCast(cast);
+		const serializedMovieDetails = serializeMovieDetails(movieDetails);
+		const serializedGenres = serializeGenres(genres);
+		const serializedCast = serializeCast(cast);
 
-			result = /** @type {MovieData} */ ({
-				movieDetails: serializedMovieDetails[0],
-				genres: serializedGenres,
-				cast: serializedCast
-			});
-		}
-
-		movieCache.update((cache) => ({ ...cache, [movieId]: result }));
+		result = /** @type {MovieData} */ ({
+			movieDetails: serializedMovieDetails[0],
+			genres: serializedGenres,
+			cast: serializedCast
+		});
 
 		return result;
 	} catch (error) {
@@ -156,7 +148,6 @@ export const actions = {
 		}
 
 		await updateMovieReview(movieId, review);
-		clearMovieCache(movieId);
 
 		return { success: true };
 	},
@@ -171,7 +162,6 @@ export const actions = {
 		}
 
 		await updateMovieReview(movieId, review);
-		clearMovieCache(movieId);
 
 		return { success: true };
 	},
@@ -180,7 +170,6 @@ export const actions = {
 		const movieId = params.id;
 
 		await updateMovieReview(movieId, null);
-		clearMovieCache(movieId);
 
 		return { success: true };
 	}
@@ -199,12 +188,4 @@ async function updateMovieReview(movieId, review) {
 	} catch (error) {
 		console.error('Database query failed:', error);
 	}
-}
-
-function clearMovieCache(movieId) {
-	movieCache.update((cache) => {
-		const updatedCache = { ...cache };
-		delete updatedCache[movieId];
-		return updatedCache;
-	});
 }
