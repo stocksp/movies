@@ -1,5 +1,5 @@
 // src/routes/movie/[id]/+page.server.js
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 import { get } from 'svelte/store';
 import { fail } from '@sveltejs/kit';
 
@@ -37,7 +37,7 @@ export async function load({ params }) {
 
 async function fetchMovieDetails(movieId) {
 	try {
-		const [rows] = await mysql.query(
+		const [rows] = await pool.query(
 			`
     SELECT m.title, m.release_date, m.overview, m.review, m.runtime, m.poster
     FROM movies m
@@ -56,7 +56,7 @@ async function fetchMovieDetails(movieId) {
 
 async function fetchGenres(movieId) {
 	try {
-		const [rows] = await mysql.query(
+		const [rows] = await pool.query(
 			`
     SELECT g.name FROM
     movies m
@@ -77,7 +77,7 @@ async function fetchGenres(movieId) {
 
 async function fetchCast(movieId) {
 	try {
-		const [rows] = await mysql.query(
+		const [rows] = await pool.query(
 			`
     SELECT a.id, a.name, c.character, a.picture,
     (SELECT COUNT(*) FROM cast WHERE actorid = c.actorid) AS roles
@@ -177,7 +177,7 @@ export const actions = {
 
 async function updateMovieReview(movieId, review) {
 	try {
-		await mysql.query(
+		await pool.query(
 			`
     UPDATE movies
     SET review = ?

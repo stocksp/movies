@@ -1,4 +1,4 @@
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 /** @typedef {Object} Genre
  * @property {number} id
@@ -10,7 +10,7 @@ import { mysql } from '$lib/server/mysql';
  */
 export async function load() {
 	try {
-		const [rows] = await mysql.query({
+		const [rows] = await pool.query({
 			sql: `SELECT g.id, g.name FROM genre g`,
 			args: []
 		});

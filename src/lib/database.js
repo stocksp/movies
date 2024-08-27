@@ -1,5 +1,5 @@
 // src/lib/database.js
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 /**
  * @param {string} movieId
@@ -8,7 +8,7 @@ import { mysql } from '$lib/server/mysql';
  */
 export async function updateReview(movieId, review) {
 	try {
-		return await mysql.query({
+		return await pool.query({
 			sql: `
       UPDATE movies
       SET review = ?
@@ -28,7 +28,7 @@ export async function updateReview(movieId, review) {
  */
 export async function removeReview(movieId) {
 	try {
-		return await mysql.query({
+		return await pool.query({
 			sql: `
       UPDATE movies
       SET review = NULL

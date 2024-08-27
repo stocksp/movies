@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 export async function load({ url }) {
 	try {
@@ -38,7 +38,7 @@ export async function load({ url }) {
 		}
 
 		// Count total matching records
-		const [totalCountResult] = await mysql.query(sql, args);
+		const [totalCountResult] = await pool.query(sql, args);
 
 		const totalCount = totalCountResult[0].total;
 		const totalPages = Math.ceil(totalCount / pageSize);
@@ -85,7 +85,7 @@ export async function load({ url }) {
 			movieArgs = [`%${name}%`, pageSize, offset];
 		}
 
-		const [movieData] = await mysql.query(movieSql, movieArgs);
+		const [movieData] = await pool.query(movieSql, movieArgs);
 
 		// Fetch genre names
 		let genreNamesSql;
@@ -100,7 +100,7 @@ export async function load({ url }) {
 			genreNamesArgs = [];
 		}
 
-		const [genreNames] = await mysql.query(genreNamesSql, genreNamesArgs);
+		const [genreNames] = await pool.query(genreNamesSql, genreNamesArgs);
 
 		const serializedMovieData = movieData.map((record) => ({
 			...record,

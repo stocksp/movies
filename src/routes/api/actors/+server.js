@@ -1,6 +1,6 @@
 // src/routes/api/actors/+server.js
 import { json } from '@sveltejs/kit';
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 export async function GET({ url }) {
 	const search = url.searchParams.get('search') || '';
@@ -16,7 +16,7 @@ export async function GET({ url }) {
 
 	if (search.length >= 3) {
 		try {
-			const [results] = await mysql.query('SELECT id, name FROM actors WHERE name LIKE ?', [
+			const [results] = await pool.query('SELECT id, name FROM actors WHERE name LIKE ?', [
 				searchTerm
 			]);
 			return json(results);

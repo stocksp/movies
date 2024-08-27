@@ -1,13 +1,13 @@
 // @ts-nocheck
 // src/routes/+page.server.js
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 export async function load({ params }) {
 	try {
 		const actorId = params.id; // Assuming the actor ID is passed as a route parameter
 
 		// Query 1: Actor details
-		const [actorDetails] = await mysql.query(
+		const [actorDetails] = await pool.query(
 			`
         SELECT 
             a.name, 
@@ -23,7 +23,7 @@ export async function load({ params }) {
 		);
 
 		// Query 2: Roles
-		const [roles] = await mysql.query(
+		const [roles] = await pool.query(
 			`
         SELECT 
             c.character, 
