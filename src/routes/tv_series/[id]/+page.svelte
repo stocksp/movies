@@ -1,106 +1,114 @@
 <script>
-	import { goto } from '$app/navigation';
-	import { enhance } from '$app/forms';
-	import { Spinner, Button } from '@sveltestrap/sveltestrap';
-	import { useChat } from '@ai-sdk/svelte';
-	import { onMount } from 'svelte';
+    import { page } from '$app/stores';
+    import { goto, invalidate } from '$app/navigation';
+    import { Spinner } from '@sveltestrap/sveltestrap';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+    /** @type {import('./$types').PageData} */
+    export let data;
 
-	let isLoading = false;
-	/** @type {HTMLFormElement | null} */
-	let updateForm = null;
-	/** @type {HTMLFormElement | null} */
-	let addForm = null;
+    $: currentSeason = parseInt($page.url.searchParams.get('season') || '1');
+    let isLoading = false;
 
-	const { input, handleSubmit, messages, isLoading: chatIsLoading } = useChat();
+    async function changeSeason(season) {
+        isLoading = true;
+        const url = `?season=${season}`;
+        await goto(url, { replaceState: true });
+        await invalidate((url) => url.pathname === $page.url.pathname);
+        isLoading = false;
+    }
 
-	/**
-	 * @param {number} id
-	 */
-	function navigateToActor(id) {
-		goto(`/actor/${id}`);
-	}
+    function navigateToActor(id) {
+        goto(`/actor/${id}`);
+    }
 
-	function formatDate(dateString) {
-    return dateString ? dateString : 'None';
-  }
-
+    function formatDate(dateString) {
+        return dateString ? new Date(dateString).toLocaleDateString() : 'None';
+    }
 </script>
 
 <h1>{data.seriesName}</h1>
 
-{#if isLoading}
-	<div class="spinner-container">
-		<Spinner color="primary" />
-	</div>
-{/if}
-
 <h2>Genres</h2>
 <ul>
-	{#each data.genres as genre}
-		<li>{genre.name}</li>
-	{/each}
+    {#each data.genres as genre}
+        <li>{genre.name}</li>
+    {/each}
 </ul>
 
 <h2>Cast</h2>
 <div class="cast-list">
-	{#each data.cast as actor}
-		<a
-			href="/actor/{actor.id}"
-			class="actor-card"
-			on:click|preventDefault={() => navigateToActor(actor.id)}
-		>
-			<div class="actor-info">
-				<h3>{actor.name}</h3>
-				<p>as {actor.character}</p>
-			</div>
-			<div class="actor-image">
-				{#if actor.picture}
-					<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
-				{:else}
-					<div class="placeholder-image"></div>
-				{/if}
-			</div>
-		</a>
-	{/each}
-</div>
-
-<h2>Episodes</h2>
-<div class="episode-list">
-    {#each data.movieDetails as episode}
-    <div class="episode-item">
-        <h3>{episode.name}</h3>
-        <p>Season {episode.season_number}, Episode {episode.episode_number}</p>
-        <p>Air Date: {formatDate(episode.air_date)}</p>
-        <p>{episode.overview}</p>
-    </div>
+    {#each data.cast as actor}
+        <a
+            href="/actor/{actor.id}"
+            class="actor-card"
+            on:click|preventDefault={() => navigateToActor(actor.id)}
+        >
+            <div class="actor-info">
+                <h3>{actor.name}</h3>
+                <p>as {actor.character}</p>
+            </div>
+            <div class="actor-image">
+                {#if actor.picture}
+                    <img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
+                {:else}
+                    <div class="placeholder-image"></div>
+                {/if}
+            </div>
+        </a>
     {/each}
 </div>
 
+<h2>Episodes</h2>
+{#if data.seasons > 1}
+    <div class="season-selector">
+        <label for="season-select">Season:</label>
+        <select id="season-select" bind:value={currentSeason} on:change={() => changeSeason(currentSeason)}>
+            {#each Array(data.seasons) as _, i}
+                <option value={i + 1}>Season {i + 1}</option>
+            {/each}
+        </select>
+    </div>
+{/if}
+
+{#if isLoading}
+    <div class="spinner-container">
+        <Spinner color="primary" />
+    </div>
+{:else}
+    <div class="episode-list">
+        {#each data.movieDetails as episode}
+            <div class="episode-item">
+                <h3>{episode.name}</h3>
+                <p>Season {episode.season_number}, Episode {episode.episode_number}</p>
+                <p>Air Date: {formatDate(episode.air_date)}</p>
+                <p>{episode.overview}</p>
+            </div>
+        {/each}
+    </div>
+{/if}
+
 <style>
-.episode-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-}
+    .episode-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px;
+    }
 
-.episode-item {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+    .episode-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-.episode-item h3 {
-  margin: 0 0 10px 0;
-  color: #343a40;
-}
+    .episode-item h3 {
+        margin: 0 0 10px 0;
+        color: #343a40;
+    }
 
-.episode-item p {
+	.episode-item p {
   margin: 5px 0;
   color: #6c757d;
 }

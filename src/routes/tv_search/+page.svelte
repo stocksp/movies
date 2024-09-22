@@ -107,7 +107,10 @@
 					<Col xs="10" class="d-flex flex-column pr-0">
 						<CardTitle class="large mb-0 text-truncate card-title">{record.title}</CardTitle>
 						<CardText class="small mb-0 card-text">
-							{record.overview.substring(0, 100)}...
+							{record.seasons} Seasons
+						</CardText>
+						<CardText class="small mb-0 card-text">
+							{record.overview.substring(0, 80)}...
 						</CardText>
 					</Col>
 					<Col xs="2" class="d-flex justify-content-end align-items-center pl-0">
