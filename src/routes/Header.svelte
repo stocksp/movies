@@ -47,8 +47,8 @@
 			<li aria-current={$page.url.pathname === '/actors' ? 'page' : undefined}>
 				<a href="/actors">Actors</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/about' ? 'page' : undefined}>
-				<a href="/about">About</a>
+			<li aria-current={$page.url.pathname === '/tv' ? 'page' : undefined}>
+				<a href="/tv">TV</a>
 			</li>
 		</ul>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
