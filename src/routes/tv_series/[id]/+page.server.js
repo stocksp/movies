@@ -5,15 +5,18 @@ import { error } from '@sveltejs/kit';
 export async function load({ params, url }) {
     try {
         const movieId = params.id;
-        const season = parseInt(url.searchParams.get('season') || '1');
-
-        const [seriesName, seasons, season_list, movieDetails, genres, cast] = await Promise.all([
+        const [seriesName, seasons, season_list, genres, cast] = await Promise.all([
             fetchSeriesName(movieId),
             fetchSeasons(movieId),
             fetchSeason_list(movieId),
-            fetchMovieDetails(movieId, season),
             fetchGenres(movieId),
             fetchCast(movieId)
+        ]);
+
+        let season = season_list[0];
+
+        const [movieDetails] = await Promise.all([
+            fetchMovieDetails(movieId, season)
         ]);
 
         const serializedMovieDetails = serializeMovieDetails(movieDetails);
