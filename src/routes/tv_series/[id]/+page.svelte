@@ -79,8 +79,8 @@
     <div class="season-selector">
         <label for="season-select">Season:</label>
         <select id="season-select" on:change={changeSeason}> 
-			{#each Array(data.seasons) as _, i}
-				<option value={i + 1}>Season {i + 1}</option>
+			{#each data.season_list as _, i}
+				<option value={i}>Season {i}</option>
 			{/each}
 		</select>
 		
@@ -121,13 +121,13 @@
     }
 
     .episode-item h3 {
-        margin: 0 0 10px 0;
-        color: #343a40;
+        color: #2438eb;
+		font-size: 20px;
     }
 
 	.episode-item p {
-  margin: 5px 0;
-  color: #6c757d;
+  margin: 1px 0;
+  color: #142764;
 }
 
 .button-container {

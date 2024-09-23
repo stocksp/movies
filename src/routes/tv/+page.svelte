@@ -44,7 +44,7 @@
 <Container fluid>
 	<Form on:submit={handleSubmit}>
 		<FormGroup row>
-			<Input name="name" placeholder="Enter a movie name" bind:value={name} />
+			<Input name="name" placeholder="Enter a TV show name" bind:value={name} />
 		</FormGroup>
 		<FormGroup row>
 			<label for="genra">Choose a Genre:</label>
@@ -56,6 +56,6 @@
 				{/each}
 			</select>
 		</FormGroup>
-		<Button type="submit" size="md">Retrieve Movies</Button>
+		<Button type="submit" size="md">Retrieve TV Shows</Button>
 	</Form>
 </Container>

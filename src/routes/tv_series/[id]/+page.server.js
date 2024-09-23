@@ -7,9 +7,10 @@ export async function load({ params, url }) {
         const movieId = params.id;
         const season = parseInt(url.searchParams.get('season') || '1');
 
-        const [seriesName, seasons, movieDetails, genres, cast] = await Promise.all([
+        const [seriesName, seasons, season_list, movieDetails, genres, cast] = await Promise.all([
             fetchSeriesName(movieId),
             fetchSeasons(movieId),
+            fetchSeason_list(movieId),
             fetchMovieDetails(movieId, season),
             fetchGenres(movieId),
             fetchCast(movieId)
@@ -22,6 +23,7 @@ export async function load({ params, url }) {
         return {
             seriesName: seriesName,
             seasons: seasons,
+            season_list: season_list,
             movieDetails: serializedMovieDetails,
             genres: serializedGenres,
             cast: serializedCast
@@ -40,6 +42,11 @@ async function fetchSeriesName(movieId) {
 async function fetchSeasons(movieId) {
     const [rows] = await pool.query('SELECT seasons FROM tv_series WHERE id = ?', [movieId]);
     return rows[0]?.seasons || 1;
+}
+
+async function fetchSeason_list(movieId) {
+    const [rows] = await pool.query('SELECT DISTINCT season_number FROM tv_episodes where id = ? order by season_number', [movieId]);
+    return rows;
 }
 
 async function fetchMovieDetails(movieId, season) {
