@@ -2,20 +2,32 @@
     import { page } from '$app/stores';
     import { goto, invalidate } from '$app/navigation';
     import { Spinner } from '@sveltestrap/sveltestrap';
+	import { onMount } from 'svelte';
 
     /** @type {import('./$types').PageData} */
     export let data;
 
+	let debugInfo = '';
+
+	function addDebugInfo(info) {
+        debugInfo += info + '\n';
+        console.log(info);
+    }
+
     $: currentSeason = parseInt($page.url.searchParams.get('season') || '1');
     let isLoading = false;
 
-    async function changeSeason(season) {
-        isLoading = true;
-        const url = `?season=${season}`;
-        await goto(url, { replaceState: true });
-        await invalidate((url) => url.pathname === $page.url.pathname);
-        isLoading = false;
+    async function changeSeason() {
+    const season = document.getElementById('season-select').value; // Get the selected value
+    addDebugInfo(`Changing season to: ${season}`);
+    try {
+        await goto(`?season=${season}`, { replaceState: true });
+        addDebugInfo(`URL updated to: ${window.location.href}`);
+    } catch (error) {
+        addDebugInfo(`Error updating URL: ${error.message}`);
     }
+}
+
 
     function navigateToActor(id) {
         goto(`/actor/${id}`);
@@ -24,6 +36,10 @@
     function formatDate(dateString) {
         return dateString ? new Date(dateString).toLocaleDateString() : 'None';
     }
+	onMount(() => {
+        addDebugInfo('Component mounted');
+        addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
+    });
 </script>
 
 <h1>{data.seriesName}</h1>
@@ -62,11 +78,12 @@
 {#if data.seasons > 1}
     <div class="season-selector">
         <label for="season-select">Season:</label>
-        <select id="season-select" bind:value={currentSeason} on:change={() => changeSeason(currentSeason)}>
-            {#each Array(data.seasons) as _, i}
-                <option value={i + 1}>Season {i + 1}</option>
-            {/each}
-        </select>
+        <select id="season-select" on:change={changeSeason}> 
+			{#each Array(data.seasons) as _, i}
+				<option value={i + 1}>Season {i + 1}</option>
+			{/each}
+		</select>
+		
     </div>
 {/if}
 
