@@ -13,8 +13,7 @@ export async function load({ params, url }) {
             fetchCast(movieId)
         ]);
 
-        let season = season_list[0];
-
+        let season = season_list[0].season_number;
         const [movieDetails] = await Promise.all([
             fetchMovieDetails(movieId, season)
         ]);
