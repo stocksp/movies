@@ -4,18 +4,19 @@ import { error } from '@sveltejs/kit';
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params, url }) {
     try {
+        
         const movieId = params.id;
-        const [seriesName, seasons, season_list, genres, cast] = await Promise.all([
+        let season = parseInt(url.searchParams.get('season'));
+        const season_list = await fetchSeason_list(movieId)
+        if( !season) season = season_list[0].season_number
+        console.log("server doing", season)
+
+        const [seriesName, seasons, movieDetails, genres, cast] = await Promise.all([
             fetchSeriesName(movieId),
             fetchSeasons(movieId),
-            fetchSeason_list(movieId),
+            fetchMovieDetails(movieId, season),
             fetchGenres(movieId),
             fetchCast(movieId)
-        ]);
-
-        let season = season_list[0].season_number;
-        const [movieDetails] = await Promise.all([
-            fetchMovieDetails(movieId, season)
         ]);
 
         const serializedMovieDetails = serializeMovieDetails(movieDetails);
