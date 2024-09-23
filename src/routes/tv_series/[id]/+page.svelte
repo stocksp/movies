@@ -38,6 +38,7 @@
 	onMount(() => {
 		addDebugInfo('Component mounted');
 		addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
+		console.dir(data.season_list)
 	});
 </script>
 
@@ -74,7 +75,7 @@
 </div>
 
 <h2>Episodes</h2>
-{#if data.seasons > 1}
+{#if Object.keys(data.season_list).length > 1}
 	<div class="season-selector">
 		<label for="season-select">Season:</label>
 		<select id="season-select" on:change={changeSeason}>
