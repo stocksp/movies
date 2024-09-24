@@ -14,6 +14,11 @@
         title: string;
         releasedate: string;
     }>;
+    tv_roles: Array<{
+        character: string;
+		seriesid: number;
+        name: string;
+    }>;
   }} */
 	export let data;
 
@@ -70,3 +75,12 @@
 		</li>
 	{/each}
 </ul>
+<h2>TV Roles</h2>
+<ul>
+	{#each data.tv_roles as role}
+		<li>
+			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a>
+		</li>
+	{/each}
+</ul>
+

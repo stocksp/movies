@@ -41,6 +41,8 @@
 		addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
 		console.dir(data.season_list)
 	});
+
+	let showCast = false; // Add a variable to control the visibility of the cast list
 </script>
 
 <h1>{data.seriesName}</h1>
@@ -52,28 +54,37 @@
 	{/each}
 </ul>
 
-<h2>Cast</h2>
-<div class="cast-list">
-	{#each data.cast as actor}
-		<a
-			href="/actor/{actor.id}"
-			class="actor-card"
-			on:click|preventDefault={() => navigateToActor(actor.id)}
-		>
-			<div class="actor-info">
-				<h3>{actor.name}</h3>
-				<p>as {actor.character}</p>
-			</div>
-			<div class="actor-image">
-				{#if actor.picture}
-					<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
-				{:else}
-					<div class="placeholder-image"></div>
-				{/if}
-			</div>
-		</a>
-	{/each}
-</div>
+<h2 on:click={() => (showCast = !showCast)} style="cursor: pointer"> 
+	Cast
+	{#if showCast}
+		<span>&darr;</span>
+	{:else}
+		<span>&rarr;</span>
+	{/if}
+</h2>
+{#if showCast}
+	<div class="cast-list">
+		{#each data.cast as actor}
+			<a
+				href="/actor/{actor.id}"
+				class="actor-card"
+				on:click|preventDefault={() => navigateToActor(actor.id)}
+			>
+				<div class="actor-info">
+					<h3>{actor.name}</h3>
+					<p>as {actor.character}</p>
+				</div>
+				<div class="actor-image">
+					{#if actor.picture}
+						<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
+					{:else}
+						<div class="placeholder-image"></div>
+					{/if}
+				</div>
+			</a>
+		{/each}
+	</div>
+{/if}
 
 <h2>Episodes</h2>
 {#if Object.keys(data.season_list).length > 1}

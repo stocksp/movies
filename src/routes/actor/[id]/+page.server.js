@@ -38,6 +38,21 @@ export async function load({ params }) {
 			[actorId]
 		);
 
+		// Query 3: TVRoles
+		const [tv_roles] = await pool.query(
+			`
+        SELECT 
+            c.character, 
+            s.id as seriesid, 
+            s.name
+        FROM tv_cast c
+        JOIN tv_series s ON s.id = c.seriesid
+        WHERE c.actorid = ?
+        ORDER BY c.character_order
+    `,
+			[actorId]
+		);
+
 		// Serialize the data
 		const serializedActorDetails = actorDetails.map((record) => ({
 			...record,
@@ -47,12 +62,14 @@ export async function load({ params }) {
 		// Return the data
 		return {
 			actorDetails: serializedActorDetails[0], // Assuming there's only one actor
-			roles: roles
+			roles: roles,
+			tv_roles: tv_roles
 		};
 	} catch (error) {
 		console.error('Database query failed:', error);
 		return {
-			roles: []
+			roles: [],
+			tv_roles: []
 		};
 	}
 }
