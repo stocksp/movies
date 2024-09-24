@@ -18,6 +18,7 @@
         character: string;
 		seriesid: number;
         name: string;
+		first_air_date: string;
     }>;
   }} */
 	export let data;
@@ -79,7 +80,7 @@
 <ul>
 	{#each data.tv_roles as role}
 		<li>
-			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a>
+			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date}
 		</li>
 	{/each}
 </ul>

@@ -23,6 +23,7 @@
             backdrop: string | null;
 			seasons: number
             id: number;
+			first_air_date: string;
         }>;
         pagination: {
             currentPage: number;
@@ -107,7 +108,7 @@
 					<Col xs="10" class="d-flex flex-column pr-0">
 						<CardTitle class="large mb-0 text-truncate card-title">{record.title}</CardTitle>
 						<CardText class="small mb-0 card-text">
-							{record.seasons} Seasons
+							{record.seasons} Seasons -- First aired: {record.first_air_date.split(' ')[0]}
 						</CardText>
 						<CardText class="small mb-0 card-text">
 							{record.overview.substring(0, 80)}...

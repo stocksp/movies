@@ -56,7 +56,7 @@ export async function load({ url }) {
                     WHEN t.name LIKE 'the %' THEN SUBSTRING(t.name, 5)
                     ELSE t.name
                 END AS title,
-                t.overview, t.backdrop, t.seasons, t.id
+                t.overview, t.backdrop, t.seasons, t.id, t.first_air_date
             FROM tv_series t
             WHERE (
                 SELECT COUNT(*)
@@ -76,7 +76,7 @@ export async function load({ url }) {
                     WHEN t.name LIKE 'the %' THEN SUBSTRING(t.name, 5)
                     ELSE t.name
                 END AS title,
-                t.overview, t.backdrop, t.seasons, t.id
+                t.overview, t.backdrop, t.seasons, t.id, t.first_air_date
             FROM tv_series t
             WHERE t.name LIKE ?
             ORDER BY title

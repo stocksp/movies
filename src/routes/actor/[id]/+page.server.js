@@ -44,11 +44,12 @@ export async function load({ params }) {
         SELECT 
             c.character, 
             s.id as seriesid, 
-            s.name
+            s.name,
+			substr(s.first_air_date, 1, instr(s.first_air_date, ' ')) as first_air_date
         FROM tv_cast c
         JOIN tv_series s ON s.id = c.seriesid
         WHERE c.actorid = ?
-        ORDER BY c.character_order
+        ORDER BY substr(s.first_air_date, instr(s.first_air_date, ' ') -4, 4)
     `,
 			[actorId]
 		);
