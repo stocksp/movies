@@ -3,6 +3,7 @@
 	import { goto, invalidate } from '$app/navigation';
 	import { Spinner } from '@sveltestrap/sveltestrap';
 	import { onMount } from 'svelte';
+	import { object } from 'zod';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -79,8 +80,8 @@
 	<div class="season-selector">
 		<label for="season-select">Season:</label>
 		<select id="season-select" on:change={changeSeason}>
-			{#each data.season_list as _, i}
-				<option value={i}>Season {i}</option>
+			{#each Object.values(data.season_list) as season}
+				<option value={season.season_number}>Season {season.season_number}</option>
 			{/each}
 		</select>
 	</div>
