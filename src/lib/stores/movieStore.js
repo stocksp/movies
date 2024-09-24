@@ -8,4 +8,3 @@ import { writable } from 'svelte/store';
 /**
  * @type {import('svelte/store').Writable<Record<string, MovieData>>}
  */
-export const movieCache = writable({});

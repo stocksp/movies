@@ -19,20 +19,20 @@ export async function load({ url }) {
 			const placeholders = genres.map(() => '?').join(', ');
 			sql = `
             SELECT COUNT(*) as total
-            FROM movies m
+            FROM tv_series t
             WHERE (
                 SELECT COUNT(*)
-                FROM genres gs
-                WHERE gs.movieid = m.id AND gs.genreid IN (${placeholders})
+                FROM tv_genres gs
+                WHERE gs.seriesid = t.id AND gs.genreid IN (${placeholders})
             ) = ?
-            AND m.title LIKE ?
+            AND t.name LIKE ?
         `;
 			args = [...genres, genrecount, `%${name}%`];
 		} else {
 			sql = `
             SELECT COUNT(*) as total
-            FROM movies m
-            WHERE m.title LIKE ?
+            FROM tv_series t
+            WHERE t.name LIKE ?
         `;
 			args = [`%${name}%`];
 		}
@@ -52,18 +52,18 @@ export async function load({ url }) {
 			movieSql = `
             SELECT 
                 CASE
-                    WHEN m.title LIKE 'a %' THEN SUBSTRING(m.title, 3)
-                    WHEN m.title LIKE 'the %' THEN SUBSTRING(m.title, 5)
-                    ELSE m.title
+                    WHEN t.name LIKE 'a %' THEN SUBSTRING(t.name, 3)
+                    WHEN t.name LIKE 'the %' THEN SUBSTRING(t.name, 5)
+                    ELSE t.name
                 END AS title,
-                m.release_date, m.overview, m.runtime, m.poster, m.id
-            FROM movies m
+                t.overview, t.backdrop, t.seasons, t.id, t.first_air_date
+            FROM tv_series t
             WHERE (
                 SELECT COUNT(*)
-                FROM genres gs
-                WHERE movieid = m.id AND gs.genreid IN (${placeholders})
+                FROM tv_genres gs
+                WHERE seriesid = t.id AND gs.genreid IN (${placeholders})
             ) = ?
-            AND m.title LIKE ?
+            AND t.name LIKE ?
             ORDER BY title
             LIMIT ? OFFSET ?
         `;
@@ -72,13 +72,13 @@ export async function load({ url }) {
 			movieSql = `
             SELECT 
                 CASE
-                    WHEN m.title LIKE 'a %' THEN SUBSTRING(m.title, 3)
-                    WHEN m.title LIKE 'the %' THEN SUBSTRING(m.title, 5)
-                    ELSE m.title
+                    WHEN t.name LIKE 'a %' THEN SUBSTRING(t.name, 3)
+                    WHEN t.name LIKE 'the %' THEN SUBSTRING(t.name, 5)
+                    ELSE t.name
                 END AS title,
-                m.release_date, m.overview, m.runtime, m.poster, m.id
-            FROM movies m
-            WHERE m.title LIKE ?
+                t.overview, t.backdrop, t.seasons, t.id, t.first_air_date
+            FROM tv_series t
+            WHERE t.name LIKE ?
             ORDER BY title
             LIMIT ? OFFSET ?
         `;
@@ -104,7 +104,7 @@ export async function load({ url }) {
 
 		const serializedMovieData = movieData.map((record) => ({
 			...record,
-			poster: record.poster ? Buffer.from(record.poster).toString('base64') : null
+			backdrop: record.backdrop ? Buffer.from(record.backdrop).toString('base64') : null
 		}));
 
 		return {

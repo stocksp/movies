@@ -1,13 +1,13 @@
 // @ts-nocheck
 // src/routes/+page.server.js
-import { mysql } from '$lib/server/mysql';
+import { pool } from '$lib/server/mysql';
 
 export async function load({ params }) {
 	try {
 		const actorId = params.id; // Assuming the actor ID is passed as a route parameter
 
 		// Query 1: Actor details
-		const [actorDetails] = await mysql.query(
+		const [actorDetails] = await pool.query(
 			`
         SELECT 
             a.name, 
@@ -23,7 +23,7 @@ export async function load({ params }) {
 		);
 
 		// Query 2: Roles
-		const [roles] = await mysql.query(
+		const [roles] = await pool.query(
 			`
         SELECT 
             c.character, 
@@ -38,6 +38,22 @@ export async function load({ params }) {
 			[actorId]
 		);
 
+		// Query 3: TVRoles
+		const [tv_roles] = await pool.query(
+			`
+        SELECT 
+            c.character, 
+            s.id as seriesid, 
+            s.name,
+			substr(s.first_air_date, 1, instr(s.first_air_date, ' ')) as first_air_date
+        FROM tv_cast c
+        JOIN tv_series s ON s.id = c.seriesid
+        WHERE c.actorid = ?
+        ORDER BY substr(s.first_air_date, instr(s.first_air_date, ' ') -4, 4)
+    `,
+			[actorId]
+		);
+
 		// Serialize the data
 		const serializedActorDetails = actorDetails.map((record) => ({
 			...record,
@@ -47,12 +63,14 @@ export async function load({ params }) {
 		// Return the data
 		return {
 			actorDetails: serializedActorDetails[0], // Assuming there's only one actor
-			roles: roles
+			roles: roles,
+			tv_roles: tv_roles
 		};
 	} catch (error) {
 		console.error('Database query failed:', error);
 		return {
-			roles: []
+			roles: [],
+			tv_roles: []
 		};
 	}
 }
