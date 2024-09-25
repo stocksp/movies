@@ -19,7 +19,7 @@
     /** @type {{
         movieData: Array<{
             title: string;
-            release_date: string;
+            release_date: Date;
             runtime: string;
             overview: string;
             poster: string | null;
@@ -108,7 +108,7 @@
 					<Col xs="10" class="d-flex flex-column pr-0">
 						<CardTitle class="large mb-0 text-truncate card-title">{record.title}</CardTitle>
 						<CardText class="small mb-0 card-text">
-							<b>{new Date(record.release_date).getFullYear()}</b>
+							<b>{record.release_date.getFullYear()}</b>
 							({record.runtime} min)
 							{record.overview.substring(0, 80)}...
 						</CardText>
