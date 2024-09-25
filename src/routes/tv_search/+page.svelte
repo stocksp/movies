@@ -1,29 +1,29 @@
 <script>
-    import { goto } from '$app/navigation';
-    import {
-        Container,
-        Card,
-        CardBody,
-        CardFooter,
-        CardHeader,
-        CardSubtitle,
-        CardText,
-        Row,
-        Col,
-        CardTitle,
-        Pagination,
-        PaginationItem,
-        PaginationLink
-    } from '@sveltestrap/sveltestrap';
+	import { goto } from '$app/navigation';
+	import {
+		Container,
+		Card,
+		CardBody,
+		CardFooter,
+		CardHeader,
+		CardSubtitle,
+		CardText,
+		Row,
+		Col,
+		CardTitle,
+		Pagination,
+		PaginationItem,
+		PaginationLink
+	} from '@sveltestrap/sveltestrap';
 
-    /** @type {{
+	/** @type {{
         movieData: Array<{
             title: string;
             overview: string;
             backdrop: string | null;
 			seasons: number
             id: number;
-			first_air_date: string;
+			first_air_date: Date;
         }>;
         pagination: {
             currentPage: number;
@@ -36,32 +36,32 @@
             name: string;
         }>;
     }} */
-    export let data;
+	export let data;
 
-    function navigateToMovie(id) {
-        goto(`/tv_series/${id}`);
-    }
+	function navigateToMovie(id) {
+		goto(`/tv_series/${id}`);
+	}
 
-    function changePage(page, event) {
-        event.preventDefault();
-        const currentUrl = new URL(window.location.href);
-        currentUrl.searchParams.set('page', page.toString());
-        goto(currentUrl.toString());
-    }
+	function changePage(page, event) {
+		event.preventDefault();
+		const currentUrl = new URL(window.location.href);
+		currentUrl.searchParams.set('page', page.toString());
+		goto(currentUrl.toString());
+	}
 
-    $: searchParams = new URLSearchParams(window.location.search);
-    $: currentName = searchParams.get('name') || '';
-    $: currentGenreIds = searchParams.getAll('genres');
-    $: currentGenres = data.genreNames
-        .filter(genre => currentGenreIds.includes(genre.id.toString()))
-        .map(genre => genre.name);
-    $: totalResults = data.pagination.totalCount;
+	$: searchParams = new URLSearchParams(window.location.search);
+	$: currentName = searchParams.get('name') || '';
+	$: currentGenreIds = searchParams.getAll('genres');
+	$: currentGenres = data.genreNames
+		.filter((genre) => currentGenreIds.includes(genre.id.toString()))
+		.map((genre) => genre.name);
+	$: totalResults = data.pagination.totalCount;
 </script>
 
 <h1>Search Results</h1>
 <p>Showing results for: {currentName}</p>
 {#if currentGenres.length > 0}
-    <p>Genres: {currentGenres.join(', ')}</p>
+	<p>Genres: {currentGenres.join(', ')}</p>
 {/if}
 <p>Total results: {totalResults}</p>
 
@@ -108,7 +108,10 @@
 					<Col xs="10" class="d-flex flex-column pr-0">
 						<CardTitle class="large mb-0 text-truncate card-title">{record.title}</CardTitle>
 						<CardText class="small mb-0 card-text">
-							{record.seasons} Seasons -- First aired: {record.first_air_date.split(' ')[0]}
+							{record.seasons} Seasons -- First aired: {record.first_air_date.toLocaleDateString(
+								'en-US',
+								{ year: 'numeric', month: 'long', day: 'numeric' }
+							)}
 						</CardText>
 						<CardText class="small mb-0 card-text">
 							{record.overview.substring(0, 80)}...

@@ -94,7 +94,7 @@ function serializeMovieDetails(rows) {
         episode_number: record.episode_number,
         name: record.name,
         overview: record.overview,
-        air_date: record.air_date ? record.air_date.split('T')[0] : null
+        air_date: record.air_date
     }));
 }
 

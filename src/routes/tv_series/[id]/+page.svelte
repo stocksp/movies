@@ -39,7 +39,7 @@
 	onMount(() => {
 		addDebugInfo('Component mounted');
 		addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
-		console.dir(data.season_list)
+		console.dir(data.season_list);
 	});
 
 	let showCast = false; // Add a variable to control the visibility of the cast list
@@ -54,7 +54,7 @@
 	{/each}
 </ul>
 
-<h2 on:click={() => (showCast = !showCast)} style="cursor: pointer"> 
+<h2 on:click={() => (showCast = !showCast)} style="cursor: pointer">
 	Cast
 	{#if showCast}
 		<span>&darr;</span>
@@ -108,7 +108,15 @@
 			<div class="episode-item">
 				<h3>{episode.name}</h3>
 				<p>Season {episode.season_number}, Episode {episode.episode_number}</p>
-				<p>Air Date: {formatDate(episode.air_date)}</p>
+				{#if episode.air_date}
+					<p>
+						Air Date: {episode.air_date.toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						})}
+					</p>
+				{/if}
 				<p>{episode.overview}</p>
 			</div>
 		{/each}

@@ -2,8 +2,8 @@
 	/** @type {{
     actorDetails: {
         name: string;
-        birthday: string;
-        deathday: string;
+        birthday: Date;
+        deathday: Date;
         birthplace: string;
         biography: string;
         picture: string | null;
@@ -12,13 +12,13 @@
         character: string;
 		movieId: number;
         title: string;
-        releasedate: string;
+        release_date: Date;
     }>;
     tv_roles: Array<{
         character: string;
 		seriesid: number;
         name: string;
-		first_air_date: string;
+		first_air_date: Date;
     }>;
   }} */
 	export let data;
@@ -27,15 +27,14 @@
 	let ageInYears = null;
 
 	/**
-	 * @param {string} birthday
-	 * @param {string | null} [endDate=null]
+	 * @param {Date} birthday
+	 * @param {Date | null} [endDate=null]
 	 * @returns {number}
 	 */
 	function calculateAge(birthday, endDate = null) {
-		const dateBirth = new Date(birthday);
 		const dateEnd = endDate ? new Date(endDate) : new Date();
 		dateEnd.setHours(0, 0, 0, 0);
-		const span = dateEnd.getTime() - dateBirth.getTime();
+		const span = dateEnd.getTime() - birthday.getTime();
 		return Math.floor(span / (1000 * 60 * 60 * 24 * 365.25));
 	}
 
@@ -59,20 +58,35 @@
 	<div class="placeholder-image"></div>
 {/if}
 {#if data.actorDetails.birthday && data.actorDetails.deathday}
-	<h6>Born {data.actorDetails.birthday}</h6>
+	<h6>
+		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		})}
+	</h6>
 {:else if data.actorDetails.birthday && ageInYears !== null}
-	<h6>Born {data.actorDetails.birthday} Age {ageInYears}</h6>
+	<h6>
+		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		})} Age {ageInYears}
+	</h6>
 {/if}
 <h6>in {data.actorDetails.birthplace}</h6>
 {#if data.actorDetails.birthday && data.actorDetails.deathday && ageInYears !== null}
-	<h6>Died {data.actorDetails.deathday} Age {ageInYears}</h6>
+	<h6>Died {data.actorDetails.deathday.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} Age {ageInYears}</h6>
 {/if}
 <h6>{data.actorDetails.biography}</h6>
 <h2>Roles</h2>
 <ul>
 	{#each data.roles as role}
 		<li>
-			As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.releasedate}
+			As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.release_date.toLocaleDateString(
+				'en-US',
+				{ year: 'numeric', month: 'long', day: 'numeric' }
+			)}
 		</li>
 	{/each}
 </ul>
@@ -80,8 +94,10 @@
 <ul>
 	{#each data.tv_roles as role}
 		<li>
-			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date}
+			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
+				'en-US',
+				{ year: 'numeric', month: 'long', day: 'numeric' }
+			)}
 		</li>
 	{/each}
 </ul>
-

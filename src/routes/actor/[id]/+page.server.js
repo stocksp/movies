@@ -11,8 +11,8 @@ export async function load({ params }) {
 			`
         SELECT 
             a.name, 
-            substr(a.birthday, 1, instr(a.birthday, ' ') -1) as birthday, 
-            substr(a.deathday, 1, instr(a.deathday, ' ') -1) as deathday, 
+            a.birthday,
+            a.deathday,
             a.birthplace, 
             a.biography, 
             a.picture
@@ -29,11 +29,11 @@ export async function load({ params }) {
             c.character, 
             m.id as movieId, 
             m.title, 
-            substr(m.release_date, 1, instr(m.release_date, ' ')) as releasedate
+            m.release_date
         FROM cast c
         JOIN movies m ON m.id = c.movieid
         WHERE c.actorid = ?
-        ORDER BY substr(m.release_date, instr(m.release_date, ' ') -4, 4)
+        ORDER BY m.release_date
     `,
 			[actorId]
 		);
@@ -45,11 +45,11 @@ export async function load({ params }) {
             c.character, 
             s.id as seriesid, 
             s.name,
-			substr(s.first_air_date, 1, instr(s.first_air_date, ' ')) as first_air_date
+			s.first_air_date
         FROM tv_cast c
         JOIN tv_series s ON s.id = c.seriesid
         WHERE c.actorid = ?
-        ORDER BY substr(s.first_air_date, instr(s.first_air_date, ' ') -4, 4)
+        ORDER BY s.first_air_date
     `,
 			[actorId]
 		);
