@@ -15,6 +15,7 @@
 		PaginationItem,
 		PaginationLink
 	} from '@sveltestrap/sveltestrap';
+	import { page } from '$app/stores';
 
 	/** @type {{
         movieData: Array<{
@@ -49,7 +50,7 @@
 		goto(currentUrl.toString());
 	}
 
-	$: searchParams = new URLSearchParams(window.location.search);
+	$: searchParams = new URLSearchParams($page.url.searchParams);
 	$: currentName = searchParams.get('name') || '';
 	$: currentGenreIds = searchParams.getAll('genres');
 	$: currentGenres = data.genreNames
