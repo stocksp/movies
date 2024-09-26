@@ -74,30 +74,42 @@
 		})} Age {ageInYears}
 	</h6>
 {/if}
-<h6>in {data.actorDetails.birthplace}</h6>
+{#if data.actorDetails.birthplace}
+	<h6>in {data.actorDetails.birthplace}</h6>
+{/if}
 {#if data.actorDetails.birthday && data.actorDetails.deathday && ageInYears !== null}
-	<h6>Died {data.actorDetails.deathday.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} Age {ageInYears}</h6>
+	<h6>
+		Died {data.actorDetails.deathday.toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		})} Age {ageInYears}
+	</h6>
 {/if}
 <h6>{data.actorDetails.biography}</h6>
-<h2>Roles</h2>
-<ul>
-	{#each data.roles as role}
-		<li>
-			As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.release_date.toLocaleDateString(
-				'en-US',
-				{ year: 'numeric', month: 'long', day: 'numeric' }
-			)}
-		</li>
-	{/each}
-</ul>
-<h2>TV Roles</h2>
-<ul>
-	{#each data.tv_roles as role}
-		<li>
-			As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
-				'en-US',
-				{ year: 'numeric', month: 'long', day: 'numeric' }
-			)}
-		</li>
-	{/each}
-</ul>
+{#if data.roles.length > 0}
+	<h2>Movie Roles</h2>
+	<ul>
+		{#each data.roles as role}
+			<li>
+				As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.release_date.toLocaleDateString(
+					'en-US',
+					{ year: 'numeric', month: 'long', day: 'numeric' }
+				)}
+			</li>
+		{/each}
+	</ul>
+{/if}
+{#if data.tv_roles.length > 0}
+	<h2>TV Roles</h2>
+	<ul>
+		{#each data.tv_roles as role}
+			<li>
+				As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
+					'en-US',
+					{ year: 'numeric', month: 'long', day: 'numeric' }
+				)}
+			</li>
+		{/each}
+	</ul>
+{/if}
