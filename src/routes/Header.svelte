@@ -1,13 +1,13 @@
 <script>
 	import { page } from '$app/stores';
 	import logo from '$lib/images/svelte-logo.svg';
-	import { Icon, Tooltip } from '@sveltestrap/sveltestrap';
+	//import { Icon, Tooltip } from '@sveltestrap/sveltestrap';
 	
 	/** @type {{ branchName: string; commitHash: string; buildDate: string }} */
-	const buildInfo = import.meta.env.VITE_BUILD_INFO;
+	//const buildInfo = import.meta.env.VITE_BUILD_INFO;
 
 	// Format commit hash to show only first 8 characters
-	const shortCommitHash = buildInfo.commitHash.slice(0, 8);
+	//const shortCommitHash = buildInfo.commitHash.slice(0, 8);
 
 	/**
 	 * Formats a date string into a more readable format
@@ -27,10 +27,11 @@
 		return date.toLocaleString('en-US', options);
 	};
 
-	const formattedBuildDate = formatDate(buildInfo.buildDate);
+	//const formattedBuildDate = formatDate(buildInfo.buildDate);
 </script>
 <header>
 	<div class="corner">
+		<!-- svelte-ignore a11y_consider_explicit_label -->
 		<a href="https://kit.svelte.dev">
 			<img src={logo} alt="SvelteKit" />
 		</a>
@@ -56,13 +57,28 @@
 		</svg>
 	</nav>
 
-	<div class="corner">
-		<Icon id="info" name="info-circle" />
-		<Tooltip target="info" placement="left">
-			<p>Branch: {buildInfo.branchName}</p>
-			<p>Commit: {shortCommitHash}</p>
-			<p>Build Date: {formattedBuildDate}</p>
-		</Tooltip>
+	<div class="corner relative w-12 h-12"> 
+		<!-- svelte-ignore a11y_consider_explicit_label -->
+		<button 
+			id="info" 
+			class="text-gray-500 hover:text-gray-700"
+			aria-describedby="info-tooltip" 
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+			</svg>
+		</button>
+	
+		<div 
+			id="info-tooltip"
+			role="tooltip"
+			class="absolute z-10 invisible bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 text-sm text-gray-700 shadow-lg opacity-0 transition-opacity duration-300 -left-16 top-2 peer-hover:visible peer-hover:opacity-100"
+		>
+			<p>Branch: Todo branch</p>
+			<p>Commit: todo hash</p>
+			<p>Build Date: todo date</p>
+			<div class="tooltip-arrow absolute -left-2 top-2 w-2 h-2 transform rotate-45 bg-gray-100 border-t border-gray-200 border-l border-gray-200"></div>
+		</div>
 	</div>
 </header>
 

@@ -1,15 +1,22 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 
-	let searchTerm = '';
-	let actors = [];
-	let fullWildcard = false;
-
-	$: if (searchTerm.length >= 3) {
-		searchActors();
-	} else {
-		actors = [];
+	interface Actor {
+		id: number;
+		name: string;
 	}
+
+	let searchTerm: string = $state('');
+	let actors: Actor[] = $state([]); // Initialize as an empty array of Actor type
+	let fullWildcard: boolean = $state(false);
+
+	$effect(() => {
+		if (searchTerm.length >= 3) {
+			searchActors();
+		} else {
+			actors = [];
+		}
+	});
 
 	async function searchActors() {
 		console.log('Searching for:', searchTerm, 'with fullWildcard:', fullWildcard);
@@ -19,7 +26,7 @@
 		);
 
 		if (response.ok) {
-			actors = await response.json();
+			actors = (await response.json()) as Actor[]; // Type assertion to Actor[]
 			console.log('Fetched actors:', actors);
 		} else {
 			console.error('Error fetching actors:', response.statusText);
@@ -27,7 +34,7 @@
 		}
 	}
 
-	function navigateToActor(id) {
+	function navigateToActor(id: number) {
 		goto(`/actor/${id}`);
 	}
 </script>
@@ -43,13 +50,13 @@
 			type="text"
 			bind:value={searchTerm}
 			placeholder="Enter actor name"
-			on:input={() => console.log('Current input:', searchTerm)}
+			oninput={() => console.log('Current input:', searchTerm)}
 		/>
 		<label class="checkbox-container">
 			<input
 				type="checkbox"
 				bind:checked={fullWildcard}
-				on:change={() => searchTerm.length >= 3 && searchActors()}
+				onchange={() => searchTerm.length >= 3 && searchActors()}
 			/>
 			Full Wildcard
 		</label>
@@ -59,7 +66,7 @@
 		<ul>
 			{#each actors as actor}
 				<li>
-					<button on:click={() => navigateToActor(actor.id)}>
+					<button onclick={() => navigateToActor(actor.id)}>
 						{actor.name}
 					</button>
 				</li>

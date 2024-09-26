@@ -2,29 +2,46 @@
 import { pool } from '$lib/server/mysql';
 import { get } from 'svelte/store';
 import { fail } from '@sveltejs/kit';
+import type { RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2';
 
-// ... (keep all type definitions as they are)
+interface Genre {
+	name: string;
+}
+
+function isRowDataPacketArray(result: any): result is RowDataPacket[] {
+	return Array.isArray(result) && result.every((item) => typeof item === 'object');
+}
 
 export async function load({ params }) {
+	
 	try {
-		const movieId = params.id;
+		console.log('running load for movie/id', params.id)
+		const movieId = parseInt(params.id);
 
 		let result;
-		const [movieDetails, genres, cast] = await Promise.all([
+		const [movieDetailsResult, genresResult, castResult] = await Promise.all([
 			fetchMovieDetails(movieId),
 			fetchGenres(movieId),
 			fetchCast(movieId)
 		]);
 
-		const serializedMovieDetails = serializeMovieDetails(movieDetails);
-		const serializedGenres = serializeGenres(genres);
-		const serializedCast = serializeCast(cast);
-
-		result = /** @type {MovieData} */ ({
+		let serializedMovieDetails: MovieDetails[] = [];
+		if (isRowDataPacketArray(movieDetailsResult)) {
+			serializedMovieDetails = serializeMovieDetails(movieDetailsResult);
+		}
+		let serializedGenres: Genre[] = [];
+		if (isRowDataPacketArray(genresResult)) {
+			serializedGenres = serializeGenres(genresResult);
+		}
+		let serializedCast: CastMember[] = [];
+		if (isRowDataPacketArray(castResult)) {
+			serializedCast = serializeCast(castResult);
+		}
+		result = {
 			movieDetails: serializedMovieDetails[0],
 			genres: serializedGenres,
 			cast: serializedCast
-		});
+		};
 
 		return result;
 	} catch (error) {
@@ -35,7 +52,7 @@ export async function load({ params }) {
 	}
 }
 
-async function fetchMovieDetails(movieId) {
+async function fetchMovieDetails(movieId: number) {
 	try {
 		const [rows] = await pool.query(
 			`
@@ -54,7 +71,7 @@ async function fetchMovieDetails(movieId) {
 	}
 }
 
-async function fetchGenres(movieId) {
+async function fetchGenres(movieId: number) {
 	try {
 		const [rows] = await pool.query(
 			`
@@ -75,7 +92,7 @@ async function fetchGenres(movieId) {
 	}
 }
 
-async function fetchCast(movieId) {
+async function fetchCast(movieId: number) {
 	try {
 		const [rows] = await pool.query(
 			`
@@ -98,11 +115,7 @@ async function fetchCast(movieId) {
 	}
 }
 
-/**
- * @param {any[]} rows
- * @returns {MovieDetails[]}
- */
-function serializeMovieDetails(rows) {
+function serializeMovieDetails(rows: RowDataPacket[]): MovieDetails[] {
 	return rows.map((record) => ({
 		title: record.title,
 		release_date: record.release_date,
@@ -113,21 +126,14 @@ function serializeMovieDetails(rows) {
 	}));
 }
 
-/**
- * @param {any[]} rows
- * @returns {Genre[]}
- */
-function serializeGenres(rows) {
+function serializeGenres(rows: RowDataPacket[]): Genre[] {
 	return rows.map((record) => ({
 		name: record.name
 	}));
 }
 
-/**
- * @param {any[]} rows
- * @returns {CastMember[]}
- */
-function serializeCast(rows) {
+
+function serializeCast(rows: RowDataPacket[]): CastMember[] {
 	return rows.map((record) => ({
 		id: record.id,
 		name: record.name,
@@ -141,7 +147,7 @@ export const actions = {
 	addReview: async ({ params, request }) => {
 		const formData = await request.formData();
 		const review = formData.get('review');
-		const movieId = params.id;
+		const movieId = parseInt(params.id);
 
 		if (typeof review !== 'string' || review.length === 0) {
 			return fail(400, { review, missing: true });
@@ -155,7 +161,7 @@ export const actions = {
 	updateReview: async ({ params, request }) => {
 		const formData = await request.formData();
 		const review = formData.get('review');
-		const movieId = params.id;
+		const movieId = parseInt(params.id);
 
 		if (typeof review !== 'string' || review.length === 0) {
 			return fail(400, { review, missing: true });
@@ -167,7 +173,7 @@ export const actions = {
 	},
 
 	removeReview: async ({ params }) => {
-		const movieId = params.id;
+		const movieId = parseInt(params.id);
 
 		await updateMovieReview(movieId, null);
 
@@ -175,7 +181,7 @@ export const actions = {
 	}
 };
 
-async function updateMovieReview(movieId, review) {
+async function updateMovieReview(movieId: number, review: string | null) {
 	try {
 		await pool.query(
 			`

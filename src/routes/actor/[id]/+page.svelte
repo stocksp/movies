@@ -1,37 +1,39 @@
-<script>
-	/** @type {{
-    actorDetails: {
-        name: string;
-        birthday: Date;
-        deathday: Date;
-        birthplace: string;
-        biography: string;
-        picture: string | null;
-    };
-    roles: Array<{
-        character: string;
+<script lang="ts">
+	import type { PageData } from './$types';
+
+	interface ActorDetails {
+		name: string;
+		birthday: Date;
+		deathday: Date;
+		birthplace: string;
+		biography: string;
+		picture: string | null;
+	}
+
+	interface Role {
+		character: string;
 		movieId: number;
-        title: string;
-        release_date: Date;
-    }>;
-    tv_roles: Array<{
-        character: string;
+		title: string;
+		releasedate: Date;
+	}
+
+	interface TvRole {
+		character: string;
 		seriesid: number;
-        name: string;
-		first_air_date: Date;
-    }>;
-  }} */
-	export let data;
+		name: string;
+		first_air_date: string;
+	}
 
-	/** @type {number | null} */
-	let ageInYears = null;
+	interface ActorData {
+		actorDetails: ActorDetails;
+		roles: Role[];
+		tv_roles: TvRole[];
+	}
 
-	/**
-	 * @param {Date} birthday
-	 * @param {Date | null} [endDate=null]
-	 * @returns {number}
-	 */
-	function calculateAge(birthday, endDate = null) {
+	let { data }: { data: PageData } = $props();
+	let ageInYears: number | null = $state(null);
+
+	function calculateAge(birthday: Date, endDate: Date | null = null): number {
 		const dateEnd = endDate ? new Date(endDate) : new Date();
 		dateEnd.setHours(0, 0, 0, 0);
 		const span = dateEnd.getTime() - birthday.getTime();
