@@ -11,7 +11,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [sveltekit()],
     define: {
-      
+      'import.meta.env.VITE_BUILD_INFO': JSON.stringify({
+        branchName: getBranchName(),
+        commitHash: getCommitHash(),
+        buildDate: getBuildDate(),
+      }),
       'process.env': env
     },
   };
