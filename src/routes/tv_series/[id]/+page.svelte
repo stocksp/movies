@@ -42,6 +42,7 @@
 	let showCast = $state(false); // Add a variable to control the visibility of the cast list
 </script>
 
+
 <h1>{data.seriesName}</h1>
 
 <h2>Genres</h2>
