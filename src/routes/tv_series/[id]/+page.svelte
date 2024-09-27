@@ -15,8 +15,7 @@
 		debugInfo += info + '\n';
 		console.log(info);
 	}
-
-	let currentSeason = $state(parseInt($page.url.searchParams.get('season') || '1'));
+	
 	let isLoading = $state(false);
 
 	async function changeSeason() {
@@ -27,7 +26,7 @@
 			await goto(`?season=${season}`, { replaceState: true });
 			//addDebugInfo(`URL updated to: ${window.location.href}`);
 		} catch (error) {
-			console.log('Wow an error happende')
+			console.log('Wow an error happende');
 			//addDebugInfo(`Error updating URL: ${error.message}`);
 		}
 	}
@@ -39,12 +38,7 @@
 	function formatDate(dateString: string) {
 		return dateString ? new Date(dateString).toLocaleDateString() : 'None';
 	}
-	/* onMount(() => {
-		addDebugInfo('Component mounted');
-		addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
-		console.dir(data.season_list);
-	}); */
-
+	
 	let showCast = $state(false); // Add a variable to control the visibility of the cast list
 </script>
 
@@ -93,12 +87,14 @@
 {/if}
 
 <h2>Episodes</h2>
-{#if Object.keys(data.season_list).length > 1}
+{#if data.season_list.length > 1}
 	<div class="season-selector">
 		<label for="season-select">Season:</label>
-		<select bind:value={currentSeason} id="season-select" onchange={changeSeason}>
-			{#each Object.values(data.season_list) as season}
-				<option value={season.season_number}>Season {season.season_number}</option>
+		<select id="season-select" onchange={changeSeason}>
+			{#each data.season_list as season}
+				<option value={season.season_number} selected={season.season_number === data.season}>
+					Season {season.season_number}
+				</option>
 			{/each}
 		</select>
 	</div>
@@ -145,13 +141,7 @@
 		color: #142764;
 	}
 
-	.button-container {
-		display: flex;
-		justify-content: space-between;
-		gap: 10px;
-		margin-top: 20px;
-		margin-bottom: 20px;
-	}
+	
 
 	.button-form {
 		flex: 1;

@@ -30,7 +30,7 @@ export async function load({ params, url }) {
 		const movieId = parseInt(params.id);
 		const seasonListResult = await fetchSeasonList(movieId);
 		const seasonList = seasonListResult as SeasonList[];
-		let season = parseInt(url.searchParams.get('season') || '') || seasonList[0].season_number;
+		let season = getSeason(url, seasonList)
 
 		console.log('server doing', season);
 
@@ -52,21 +52,37 @@ export async function load({ params, url }) {
 			season_list: seasonList,
 			movieDetails: movieDetails,
 			genres: genres,
-			cast: cast
+			cast: cast,
+			season
 		};
 	} catch (err) {
 		console.error('Failed to load data:', err);
 		throw error(500, 'Failed to load data');
 	}
 }
+// navigating from search we have no season param
+// all client side navigation have a 'season' from the select
+function getSeason(url: URL, theList: SeasonList[]): number {
+	const tmp = url.searchParams.get('season');
+	if (tmp) return parseInt(tmp);
+	// figure out from what's in theList what we return
+	if (theList[0].season_number === 0 && theList.length > 1) {
+		return theList[1].season_number;
+	}
+	return theList[0].season_number;
+}
 
 async function fetchSeriesName(movieId: number): Promise<string> {
-	const [rows] = await pool.query<RowDataPacket[]>('SELECT name FROM tv_series WHERE id = ?', [movieId]);
+	const [rows] = await pool.query<RowDataPacket[]>('SELECT name FROM tv_series WHERE id = ?', [
+		movieId
+	]);
 	return rows[0]?.name || 'Unknown Series';
 }
 
 async function fetchSeasons(movieId: number): Promise<number> {
-	const [rows] = await pool.query<RowDataPacket[]>('SELECT seasons FROM tv_series WHERE id = ?', [movieId]);
+	const [rows] = await pool.query<RowDataPacket[]>('SELECT seasons FROM tv_series WHERE id = ?', [
+		movieId
+	]);
 	return rows[0]?.seasons || 1;
 }
 
