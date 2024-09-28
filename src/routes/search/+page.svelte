@@ -89,26 +89,24 @@
 
 		{#each data.movieData as record}
 			<button
-				class="container bg-gradient-to-b from-teal-100  to-teal-700 via-transparent shadow-lg shadow-blue-700 rounded-lg overflow-hidden mb-4 cursor-pointer"
+				class="flex h-24 bg-gradient-to-b from-teal-100  to-teal-700 via-transparent shadow-lg shadow-blue-700 rounded-lg overflow-hidden mb-4 cursor-pointer"
 				onclick={() => navigateToMovie(record.id)}
 			>
-				<div class="flex h-24">
-					<div class="flex-grow p-2">
-						<h2 class="text-left text-2xl font-bold  p-0  mb-1 truncate">{record.title}</h2>
-						<p class="line-clamp-2 text-left text-sm  font-semibold text-black">
-							<b>{record.release_date.getFullYear()}</b>
-							({record.runtime} min)
-							{record.overview}
-						</p>
-					</div>
-					<div class="w-24 h-full flex items-center justify-end pr-2">
-						<img
-							src="data:image/jpeg;base64,{record.poster}"
-							alt={record.title}
-							class="h-20 object-contain"
-						/>
-					</div>
-				</div>
+			<div class="flex-grow p-2">
+				<h2 class="text-left text-2xl font-bold p-0  mb-1 truncate">{record.title}</h2>
+				<p class="line-clamp-2 text-left text-sm  font-semibold text-black">
+					<b>{record.release_date.getFullYear()}</b>
+					({record.runtime} min)
+					{record.overview}
+				</p>
+			</div>
+			<div class="flex-shrink-0 p-2">
+				<img
+					src="data:image/jpeg;base64,{record.poster}"
+					alt={record.title}
+					style="height: 80px; object-fit: contain;"
+				/>
+			</div>
 			</button>
 		{/each}
 	{/if}
