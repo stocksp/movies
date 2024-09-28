@@ -1,4 +1,6 @@
 <script lang="ts">
+	import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "$lib/components/ui/card";
+	import { Button } from "$lib/components/ui/button";
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
@@ -6,7 +8,7 @@
 	let { data }: { data: PageData } = $props();
 
 	function navigateToMovie(id: number) {
-		console.log('navigation to:', id)
+		console.log('navigation to:', id);
 		goto(`/movie/${id}`);
 	}
 
@@ -75,8 +77,7 @@
 							onclick={(e) => {
 								if (data.pagination) {
 									// Check if data.pagination is defined
-									changePage(data.pagination.currentPage 
-									= 1, e);
+									changePage((data.pagination.currentPage = 1), e);
 								}
 							}}
 						>
@@ -87,27 +88,32 @@
 			</nav>
 		{/if}
 
-		{#each data.movieData as record}
-			<button
-				class="flex h-24 bg-gradient-to-b from-teal-100  to-teal-700 via-transparent shadow-lg shadow-blue-700 rounded-lg overflow-hidden mb-4 cursor-pointer"
-				onclick={() => navigateToMovie(record.id)}
-			>
-			<div class="flex-grow p-2">
-				<h2 class="text-left text-2xl font-bold p-0  mb-1 truncate">{record.title}</h2>
-				<p class="line-clamp-2 text-left text-sm  font-semibold text-black">
-					<b>{record.release_date.getFullYear()}</b>
-					({record.runtime} min)
-					{record.overview}
-				</p>
-			</div>
-			<div class="flex-shrink-0 p-2">
-				<img
-					src="data:image/jpeg;base64,{record.poster}"
-					alt={record.title}
-					style="height: 80px; object-fit: contain;"
-				/>
-			</div>
-			</button>
-		{/each}
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{#each data.movieData as record}
+			  <Card class="w-full">
+				<CardHeader>
+				  <CardTitle class="truncate">{record.title}</CardTitle>
+				  <CardDescription>
+					{record.release_date.getFullYear()} ({record.runtime} min)
+				  </CardDescription>
+				</CardHeader>
+				<CardContent>
+				  <div class="flex items-start space-x-4">
+					<img
+					  src="data:image/jpeg;base64,{record.poster}"
+					  alt={record.title}
+					  class="h-20 w-auto object-contain"
+					/>
+					<p class="line-clamp-3 text-sm">{record.overview}</p>
+				  </div>
+				</CardContent>
+				<CardFooter>
+				  <Button variant="outline" class="w-full" on:click={() => navigateToMovie(record.id)}>
+					View Details
+				  </Button>
+				</CardFooter>
+			  </Card>
+			{/each}
+		  </div>
 	{/if}
 </div>
