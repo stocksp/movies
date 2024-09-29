@@ -1,6 +1,13 @@
 <script lang="ts">
-	import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "$lib/components/ui/card";
-	import { Button } from "$lib/components/ui/button";
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
+	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import type { PageData } from './$types';
@@ -90,30 +97,34 @@
 
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each data.movieData as record}
-			  <Card class="w-full">
-				<CardHeader>
-				  <CardTitle class="truncate">{record.title}</CardTitle>
-				  <CardDescription>
-					{record.release_date.getFullYear()} ({record.runtime} min)
-				  </CardDescription>
-				</CardHeader>
-				<CardContent>
-				  <div class="flex items-start space-x-4">
-					<img
-					  src="data:image/jpeg;base64,{record.poster}"
-					  alt={record.title}
-					  class="h-20 w-auto object-contain"
-					/>
-					<p class="line-clamp-3 text-sm">{record.overview}</p>
-				  </div>
-				</CardContent>
-				<CardFooter>
-				  <Button variant="outline" class="w-full" on:click={() => navigateToMovie(record.id)}>
-					View Details
-				  </Button>
-				</CardFooter>
-			  </Card>
+				<Card class="w-full">
+					<CardHeader>
+						<CardTitle class="truncate">{record.title}</CardTitle>
+						<CardDescription>
+							{record.release_date.getFullYear()} ({record.runtime} min)
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div class="flex items-start space-x-4">
+							<img
+								src="data:image/jpeg;base64,{record.poster}"
+								alt={record.title}
+								class="h-20 w-auto object-contain"
+							/>
+							<p class="line-clamp-3 text-sm overflow-auto">{record.overview}</p>
+						</div>
+					</CardContent>
+					<CardFooter>
+						<Button
+							variant="outline"
+							class="w-full bg-emerald-300"
+							on:click={() => navigateToMovie(record.id)}
+						>
+							View Details
+						</Button>
+					</CardFooter>
+				</Card>
 			{/each}
-		  </div>
+		</div>
 	{/if}
 </div>

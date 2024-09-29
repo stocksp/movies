@@ -2,6 +2,15 @@
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 	import { page } from '$app/stores';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardFooter,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
+	import { Button } from '$lib/components/ui/button';
 
 	interface TvSeries {
 		title: string;
@@ -107,35 +116,45 @@
 				</ul>
 			</nav>
 		{/if}
+
 		{#if data.movieData}
-			{#each data.movieData as record}
-				<button
-					class="bg-white shadow-md rounded-lg overflow-hidden mb-4 cursor-pointer"
-					onclick={() => navigateToMovie(record.id)}
-				>
-					<div class="flex h-24">
-						<div class="flex-grow p-4">
-							<h2 class="text-lg font-bold mb-1 truncate">{record.title}</h2>
-							<p class="text-sm text-gray-600">
-								{record.seasons} Seasons -- First aired: {record.first_air_date.toLocaleDateString(
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{#each data.movieData as record}
+					<Card class="w-full">
+						<CardHeader>
+							<CardTitle class="truncate">{record.title}</CardTitle>
+							<CardDescription class="truncate">
+								{#if record.seasons > 1}
+								{record.seasons} Seasons - First aired: {record.first_air_date.toLocaleDateString(
 									'en-US',
-									{ year: 'numeric', month: 'long', day: 'numeric' }
+									{ year: 'numeric', month: 'short', day: 'numeric' }
 								)}
-							</p>
-							<p class="text-sm text-gray-600">
-								{record.overview.substring(0, 80)}...
-							</p>
-						</div>
-						<div class="w-24 h-full flex items-center justify-center">
-							<img
-								src="data:image/jpeg;base64,{record.backdrop}"
-								alt={record.title}
-								class="h-20 object-contain"
-							/>
-						</div>
-					</div>
-				</button>
-			{/each}
+								{:else}
+								{record.seasons} Season - First aired: {record.first_air_date.toLocaleDateString(
+									'en-US',
+									{ year: 'numeric', month: 'short', day: 'numeric' }
+								)}
+								{/if}
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div class="flex items-start space-x-4">
+								<img
+									src="data:image/jpeg;base64,{record.backdrop}"
+									alt={record.title}
+									class="h-20 w-auto object-contain"
+								/>
+								<p class="line-clamp-3 text-sm overflow-auto">{record.overview}</p>
+							</div>
+						</CardContent>
+						<CardFooter>
+							<Button variant="outline" class="w-full bg-emerald-300" on:click={() => navigateToMovie(record.id)}>
+								View Details
+							</Button>
+						</CardFooter>
+					</Card>
+				{/each}
+			</div>
 		{/if}
 	{/if}
 </div>
