@@ -122,7 +122,7 @@
 				{#each data.movieData as record}
 					<Card class="w-full">
 						<CardHeader>
-							<CardTitle class="truncate">{record.title}</CardTitle>
+							<CardTitle class="truncate pb-1">{record.title}</CardTitle>
 							<CardDescription class="truncate">
 								{#if record.seasons > 1}
 								{record.seasons} Seasons - First aired: {record.first_air_date.toLocaleDateString(
@@ -144,7 +144,7 @@
 									alt={record.title}
 									class="h-20 w-auto object-contain"
 								/>
-								<p class="line-clamp-3 text-sm overflow-auto">{record.overview}</p>
+								<p class="text-sm overflow-auto h-20">{record.overview}</p>
 							</div>
 						</CardContent>
 						<CardFooter>

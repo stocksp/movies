@@ -94,7 +94,7 @@
 	<ul>
 		{#each data.roles as role}
 			<li>
-				As {role.character} in <a href="/movie/{role.movieId}">{role.title}</a> released on {role.release_date.toLocaleDateString(
+				As {role.character} in <a href="/movie/{role.movieId}" class="text-blue-600 hover:underline">{role.title}</a> released on {role.release_date.toLocaleDateString(
 					'en-US',
 					{ year: 'numeric', month: 'long', day: 'numeric' }
 				)}
@@ -107,7 +107,7 @@
 	<ul>
 		{#each data.tv_roles as role}
 			<li>
-				As {role.character} in <a href="/tv_series/{role.seriesid}">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
+				As {role.character} in <a href="/tv_series/{role.seriesid}" class="text-blue-600 hover:underline">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
 					'en-US',
 					{ year: 'numeric', month: 'long', day: 'numeric' }
 				)}
