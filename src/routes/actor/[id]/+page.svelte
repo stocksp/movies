@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { onMount } from 'svelte';
 
 	interface ActorDetails {
 		name: string;
@@ -47,20 +48,28 @@
 			ageInYears = calculateAge(data.actorDetails.birthday);
 		}
 	}
+
+	let imageOpacity = $state(0);
+
+	onMount(() => {
+		setTimeout(() => {
+			imageOpacity = 1;
+		}, 50);
+	});
 </script>
 
-<h1>{data.actorDetails.name}</h1>
+<h1 class="text-2xl font-bold">{data.actorDetails.name}</h1>
 {#if data.actorDetails.picture}
 	<img
 		src="data:image/jpeg;base64,{data.actorDetails.picture}"
 		alt={data.actorDetails.name}
-		style="height: 20%; width: 20%;"
+		style="height: 20%; width: 20%; opacity: {imageOpacity}; transition: opacity 5s ease; box-shadow: 8px 8px 15px 5px rgba(174, 97, 79, 0.6);"
 	/>
 {:else}
 	<div class="placeholder-image"></div>
 {/if}
 {#if data.actorDetails.birthday && data.actorDetails.deathday}
-	<h6>
+	<h6 class="pt-3">
 		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
@@ -68,7 +77,7 @@
 		})}
 	</h6>
 {:else if data.actorDetails.birthday && ageInYears !== null}
-	<h6>
+	<h6 class="pt-2">
 		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
@@ -90,27 +99,33 @@
 {/if}
 <h6>{data.actorDetails.biography}</h6>
 {#if data.roles.length > 0}
-	<h2>Movie Roles</h2>
+	<h2 class="text-lg font-bold">Movie Roles</h2>
 	<ul>
 		{#each data.roles as role}
 			<li>
-				As {role.character} in <a href="/movie/{role.movieId}" class="text-blue-600 hover:underline">{role.title}</a> released on {role.release_date.toLocaleDateString(
-					'en-US',
-					{ year: 'numeric', month: 'long', day: 'numeric' }
-				)}
+				As {role.character} in
+				<a href="/movie/{role.movieId}" class="text-blue-600 hover:underline">{role.title}</a>
+				released on {role.release_date.toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})}
 			</li>
 		{/each}
 	</ul>
 {/if}
 {#if data.tv_roles.length > 0}
-	<h2>TV Roles</h2>
+	<h2 class="text-lg font-bold">TV Roles</h2>
 	<ul>
 		{#each data.tv_roles as role}
 			<li>
-				As {role.character} in <a href="/tv_series/{role.seriesid}" class="text-blue-600 hover:underline">{role.name}</a> released on {role.first_air_date.toLocaleDateString(
-					'en-US',
-					{ year: 'numeric', month: 'long', day: 'numeric' }
-				)}
+				As {role.character} in
+				<a href="/tv_series/{role.seriesid}" class="text-blue-600 hover:underline">{role.name}</a>
+				released on {role.first_air_date.toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})}
 			</li>
 		{/each}
 	</ul>
