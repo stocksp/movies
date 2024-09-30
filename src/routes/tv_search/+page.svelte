@@ -124,17 +124,10 @@
 						<CardHeader>
 							<CardTitle class="truncate pb-1">{record.title}</CardTitle>
 							<CardDescription class="truncate">
-								{#if record.seasons > 1}
-								{record.seasons} Seasons - First aired: {record.first_air_date.toLocaleDateString(
+								{record.seasons} Season{record.seasons > 1 ? 's' : ''} - First aired: {record.first_air_date.toLocaleDateString(
 									'en-US',
 									{ year: 'numeric', month: 'short', day: 'numeric' }
 								)}
-								{:else}
-								{record.seasons} Season - First aired: {record.first_air_date.toLocaleDateString(
-									'en-US',
-									{ year: 'numeric', month: 'short', day: 'numeric' }
-								)}
-								{/if}
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -148,7 +141,11 @@
 							</div>
 						</CardContent>
 						<CardFooter>
-							<Button variant="outline" class="w-full bg-emerald-300" on:click={() => navigateToMovie(record.id)}>
+							<Button
+								variant="outline"
+								class="w-full bg-emerald-300"
+								on:click={() => navigateToMovie(record.id)}
+							>
 								View Details
 							</Button>
 						</CardFooter>
