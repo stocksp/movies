@@ -56,15 +56,15 @@
 	}*/
 </script>
 
-<h1>{data.movieDetails?.title}</h1>
+<p class="text-3xl font-bold">{data.movieDetails?.title}</p>
 <img
 	src="data:image/jpeg;base64,{data.movieDetails?.poster}"
 	alt={data.movieDetails?.title}
 	style="height: 25%; width: 25%;"
 />
-<p>Released: {data.movieDetails?.release_date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-<p>Runtime: {data.movieDetails?.runtime} minutes</p>
-<p>Overview: {data.movieDetails?.overview}</p>
+<p><b>Released:</b> {data.movieDetails?.release_date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+<p><b>Runtime:</b> {data.movieDetails?.runtime} minutes</p>
+<p><b>Overview:</b> {data.movieDetails?.overview}</p>
 
 {#if data.movieDetails?.review}
 	<p>Review: {data.movieDetails?.review}</p>
@@ -118,18 +118,18 @@
 	</div>
 {/if}
 
-<h2>Genres</h2>
+<p class="font-bold pt-1 pb-1">Genres</p>
 <ul>
 	{#if data.genres}
 		{#each data.genres as genre}
-			<li>{genre.name}</li>
+			<li class="list-disc list-inside indent-2">{genre.name}</li>
 		{/each}
 	{:else}
 		<li>No genres found.</li>
 	{/if}
 </ul>
 
-<h2>Cast</h2>
+<p class="font-bold pt-1 pb-1">Cast</p>
 <div class="cast-list">
 	{#if data.cast}
 		{#each data.cast as actor}
