@@ -67,7 +67,7 @@
 	<img
 		src="data:image/jpeg;base64,{data.actorDetails.picture}"
 		alt={data.actorDetails.name}
-		style="height: 20%; width: 20%; transition: filter 2s ease;
+		style="height: 20%; width: 20%; transition: filter 1s ease;
         filter: hue-rotate({imageHueRotate}deg) blur({imageBlur}px) contrast({imageContrast});
         box-shadow: 8px 8px 15px 5px rgba(174, 97, 79, 0.6);"
 	/>

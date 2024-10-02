@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import { useChat } from '@ai-sdk/svelte';
 	import { onMount } from 'svelte';
+	import { Button } from '$lib/components/ui/button';
 	import type { PageData } from './$types';
 
 	interface Genre {
@@ -62,7 +63,14 @@
 	alt={data.movieDetails?.title}
 	style="height: 25%; width: 25%;"
 />
-<p><b>Released:</b> {data.movieDetails?.release_date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+<p>
+	<b>Released:</b>
+	{data.movieDetails?.release_date.toLocaleDateString('en-US', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	})}
+</p>
 <p><b>Runtime:</b> {data.movieDetails?.runtime} minutes</p>
 <p><b>Overview:</b> {data.movieDetails?.overview}</p>
 
@@ -130,30 +138,34 @@
 </ul>
 
 <p class="font-bold pt-1 pb-1">Cast</p>
-<div class="cast-list">
+<div class="flex-container">
 	{#if data.cast}
 		{#each data.cast as actor}
-			<a
-				href="/actor/{actor.id}"
-				class="actor-card"
-				onclick={(e) => {
-					e.preventDefault();
-					navigateToActor(actor.id);
-				}}
-			>
-				<div class="actor-info">
-					<h3>{actor.name}</h3>
-					<p>as {actor.character}</p>
-					<p>Total roles: {actor.roles}</p>
+			<div class="flex-item">
+				<div class="grid-container">
+					<div class="actor font-bold">{actor.name}</div>
+					<div class="picture flex justify-center">
+						{#if actor.picture}
+							<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name}
+							class="w-auto object-contain"
+							 />
+						{:else}
+							<div class="placeholder-image"></div>
+						{/if}
+					</div>
+					<div class="character truncate">as {actor.character}</div>
+					<div class="details">
+						<Button
+							variant="outline"
+							class="w-full bg-emerald-300"
+							style="width: 120px"
+							on:click={() => navigateToActor(actor.id)}
+						>
+							View Details
+						</Button>
+					</div>
 				</div>
-				<div class="actor-image">
-					{#if actor.picture}
-						<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name} />
-					{:else}
-						<div class="placeholder-image"></div>
-					{/if}
-				</div>
-			</a>
+			</div>
 		{/each}
 	{:else}
 		<p>No cast information available.</p>
@@ -161,99 +173,74 @@
 </div>
 
 <style>
-	.button-container {
+	.flex-container {
 		display: flex;
-		justify-content: space-between;
-		gap: 10px;
-		margin-top: 20px;
-		margin-bottom: 20px;
+		flex-wrap: wrap;
+		gap: 2px;
+		margin-left: 40px;
+		justify-content: flex-start;
 	}
 
-	.button-form {
-		flex: 1;
-	}
-
-	.cast-list {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		padding: 10px;
-	}
-
-	.actor-card {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		height: 60px;
-		padding: 5px 10px;
-		border: 1px solid #ddd;
-		border-radius: 1px;
-		background-color: #fff;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.actor-info {
-		flex-grow: 1;
-		overflow: hidden;
-	}
-
-	.actor-info h3 {
-		margin: 0;
-		font-size: 0.9rem;
-		font-weight: bold;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.actor-info p {
-		margin: 2px 0 0 0;
-		font-size: 0.8rem;
-		color: #666;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.actor-image {
-		width: 50px;
-		height: 50px;
-		margin-left: 10px;
+	.flex-item {
+		width: 300px;
+		height: 150px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
-	.actor-image img,
-	.placeholder-image {
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
-		border-radius: 5px;
+	@media (max-width: 1024px) {
+		.flex-container {
+			flex-direction: row;
+		}
 	}
 
-	.placeholder-image {
-		background-color: #ddd;
+	@media (max-width: 800px) {
+		.flex-container {
+			flex-direction: row;
+		}
 	}
 
-	@media screen and (max-width: 390px) {
-		.actor-card {
-			height: 50px;
+	@media (max-width: 640px) {
+		.flex-container {
+			flex-direction: column;
 		}
+	}
+	.actor {
+		grid-area: actor;
+		height: 24px ;
+		width: 280px;
+		font-size: 18px;
+		display: flex;
+		align-items: center; 
+		justify-content: center;
+	}
+	.picture {
+		grid-area: picture;
+		height: 100px;
+        width: 92px;
+	}
+	.character {
+		grid-area: character;
+		width: 188px;
+	}
+	.details {
+		grid-area: details;
+		width: 188px;
+	}
 
-		.actor-image {
-			width: 40px;
-			height: 40px;
-		}
+	.grid-container {
+		display: grid;
+		grid-template-areas:
+			'actor actor actor actor'
+			'picture picture character character'
+			'picture picture details details';
+		padding: 2px;
+	}
 
-		.actor-info h3 {
-			font-size: 0.8rem;
-		}
-
-		.actor-info p {
-			font-size: 0.7rem;
-		}
+	.grid-container > div {
+		background-color: rgba(175, 162, 63, 0.8);
+		text-align: center;
+		padding: 1px 0;
 	}
 </style>
