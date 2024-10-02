@@ -15,7 +15,7 @@
 		debugInfo += info + '\n';
 		console.log(info);
 	}
-	
+
 	let isLoading = $state(false);
 
 	async function changeSeason() {
@@ -38,26 +38,29 @@
 	function formatDate(dateString: string) {
 		return dateString ? new Date(dateString).toLocaleDateString() : 'None';
 	}
-	
+
 	let showCast = $state(false); // Add a variable to control the visibility of the cast list
 </script>
 
+<p class="text-3xl font-bold">{data.seriesName}</p>
 
-<h1>{data.seriesName}</h1>
-
-<h2>Genres</h2>
+<p class="font-bold pt-1 pb-1">Genres</p>
 <ul>
-	{#each data.genres as genre}
-		<li>{genre.name}</li>
-	{/each}
+	{#if data.genres}
+		{#each data.genres as genre}
+			<li class="list-disc list-inside indent-2">{genre.name}</li>
+		{/each}
+	{:else}
+		<li>No genres found.</li>
+	{/if}
 </ul>
 
-<button onclick={() => (showCast = !showCast)} style="cursor: pointer">
-	Cast
+<button onclick={() => (showCast = !showCast)} class="left-align" style="cursor: pointer">
+	<span class="font-bold pt-1 pb-1">Cast</span>
 	{#if showCast}
-		<span>&darr;</span>
+		<span style="color: red">&darr;</span>
 	{:else}
-		<span>&rarr;</span>
+		<span style="color: red">&rarr;</span>
 	{/if}
 </button>
 {#if showCast}
@@ -87,7 +90,7 @@
 	</div>
 {/if}
 
-<h2>Episodes</h2>
+<p class="font-bold pt-1 pb-1">Episodes</p>
 {#if data.season_list.length > 1}
 	<div class="season-selector">
 		<label for="season-select">Season:</label>
@@ -141,8 +144,6 @@
 		margin: 1px 0;
 		color: #142764;
 	}
-
-	
 
 	.button-form {
 		flex: 1;
@@ -235,5 +236,9 @@
 		.actor-info p {
 			font-size: 0.7rem;
 		}
+	}
+	.left-align {
+		display: block;
+		text-align: left;
 	}
 </style>

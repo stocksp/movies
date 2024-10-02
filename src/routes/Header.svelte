@@ -92,19 +92,18 @@
 		</button>
 
 		<div
-			id="info-tooltip"
-			role="tooltip"
-			class="absolute z-10 w-[100px] {showTooltip
-				? 'visible opacity-100'
-				: 'invisible opacity-0'} bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 text-sm text-gray-700 shadow-lg -left-16 top-2 transition-opacity duration-300"
-		>
-			<p>Branch: {buildInfo.branchName}</p>
-			<p>Commit: {shortCommitHash}</p>
-			<p>Build Date: {formattedBuildDate}</p>
-			<div
-				class="tooltip-arrow absolute -left-2 top-2 w-2 h-2 transform rotate-45 bg-gray-100 border-t border-gray-200 border-l border-gray-200"
-			></div>
-		</div>
+    id="info-tooltip"
+    role="tooltip"
+    class="absolute z-10 w-[200px] {showTooltip ? 'visible opacity-100' : 'invisible opacity-0'} bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 text-sm text-gray-700 shadow-lg left-[-220px] top-2 transition-opacity duration-300"
+>
+    <p>Branch: <b>{buildInfo.branchName}</b></p>
+    <p>Commit: <b>{shortCommitHash}</b></p>
+    <p>Build Date: <b>{formattedBuildDate}</b></p>
+    <div
+        class="tooltip-arrow absolute left-[200px] top-2 w-2 h-2 transform rotate-45 bg-gray-100 border-t border-gray-200 border-l border-gray-200"
+    ></div>
+</div>
+
 	</div>
 </header>
 
