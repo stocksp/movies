@@ -57,7 +57,7 @@
 	}*/
 </script>
 
-<p class="text-3xl font-bold text-center">{data.movieDetails?.title}</p>
+<p class="text-3xl font-bold text-center pb-2">{data.movieDetails?.title}</p>
 <div style="display: flex; align-items: center;">
 	<div style="flex: 1;">
 		<img

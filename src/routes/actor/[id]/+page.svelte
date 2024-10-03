@@ -62,50 +62,57 @@
 	});
 </script>
 
-<p class="text-2xl font-bold">{data.actorDetails.name}</p>
-{#if data.actorDetails.picture}
-	<img
-		src="data:image/jpeg;base64,{data.actorDetails.picture}"
-		alt={data.actorDetails.name}
-		style="height: 20%; width: 20%; transition: filter 1s ease;
-        filter: hue-rotate({imageHueRotate}deg) blur({imageBlur}px) contrast({imageContrast});
-        box-shadow: 8px 8px 15px 5px rgba(174, 97, 79, 0.6);"
-	/>
-{:else}
-	<div class="placeholder-image"></div>
-{/if}
-{#if data.actorDetails.birthday && data.actorDetails.deathday}
-	<p class="pt-3 font-bold">
-		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		})}
-	</p>
-{:else if data.actorDetails.birthday && ageInYears !== null}
-	<p class="pt-3 font-bold">
-		Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		})} Age {ageInYears}
-	</p>
-{/if}
-{#if data.actorDetails.birthplace}
-	<p class="font-bold">in {data.actorDetails.birthplace}</p>
-{/if}
-{#if data.actorDetails.birthday && data.actorDetails.deathday && ageInYears !== null}
-	<p class="font-bold">
-		Died {data.actorDetails.deathday.toLocaleDateString('en-US', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		})} Age {ageInYears}
-	</p>
-{/if}
-<h6>{data.actorDetails.biography}</h6>
+<p class="text-2xl font-bold pb-2">{data.actorDetails.name}</p>
+<div style="display: flex; align-items: center;">
+	<div style="flex: 1;">
+		{#if data.actorDetails.picture}
+			<img
+				src="data:image/jpeg;base64,{data.actorDetails.picture}"
+				alt={data.actorDetails.name}
+				style="height: 100%; width: 100%; transition: filter 1s ease;
+			filter: hue-rotate({imageHueRotate}deg) blur({imageBlur}px) contrast({imageContrast});
+			box-shadow: 8px 8px 15px 5px rgba(174, 97, 79, 0.6);"
+			/>
+		{:else}
+			<div class="placeholder-image"></div>
+		{/if}
+	</div>
+	<div style="flex: 3; padding-left: 20px;">
+		{#if data.actorDetails.birthday && data.actorDetails.deathday}
+			<p class="pt-3 font-bold">
+				Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})}
+			</p>
+		{:else if data.actorDetails.birthday && ageInYears !== null}
+			<p class="pt-3 font-bold">
+				Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})} Age {ageInYears}
+			</p>
+		{/if}
+		{#if data.actorDetails.birthplace}
+			<p class="font-bold">in {data.actorDetails.birthplace}</p>
+		{/if}
+		{#if data.actorDetails.birthday && data.actorDetails.deathday && ageInYears !== null}
+			<p class="font-bold">
+				Died {data.actorDetails.deathday.toLocaleDateString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric'
+				})} Age {ageInYears}
+			</p>
+		{/if}
+		<h6>{data.actorDetails.biography}</h6>
+	</div>
+</div>
+
 {#if data.roles.length > 0}
-	<p class="text-lg font-bold pt-1 pb-1">Movie Roles</p>
+	<p class="text-lg font-bold pt-2 pb-2">Movie Roles</p>
 	<ul>
 		{#each data.roles as role}
 			<li class="list-disc list-inside indent-2">
@@ -120,8 +127,9 @@
 		{/each}
 	</ul>
 {/if}
+
 {#if data.tv_roles.length > 0}
-	<p class="text-lg font-bold pt-1">TV Roles</p>
+	<p class="text-lg font-bold pt-2 pb-2">TV Roles</p>
 	<ul>
 		{#each data.tv_roles as role}
 			<li class="list-disc list-inside indent-2">
