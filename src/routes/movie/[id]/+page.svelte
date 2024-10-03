@@ -57,25 +57,43 @@
 	}*/
 </script>
 
-<p class="text-3xl font-bold">{data.movieDetails?.title}</p>
-<img
-	src="data:image/jpeg;base64,{data.movieDetails?.poster}"
-	alt={data.movieDetails?.title}
-	style="height: 25%; width: 25%;"
-/>
-<p>
-	<b>Released:</b>
-	{data.movieDetails?.release_date.toLocaleDateString('en-US', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric'
-	})}
-</p>
-<p><b>Runtime:</b> {data.movieDetails?.runtime} minutes</p>
-<p><b>Overview:</b> {data.movieDetails?.overview}</p>
+<p class="text-3xl font-bold text-center">{data.movieDetails?.title}</p>
+<div style="display: flex; align-items: center;">
+	<div style="flex: 1;">
+		<img
+			src="data:image/jpeg;base64,{data.movieDetails?.poster}"
+			alt={data.movieDetails?.title}
+			style="height: 100%; width: 100%; object-fit: contain; box-shadow: 8px 8px 15px 5px rgba(174, 97, 79, 0.6);"
+		/>
+	</div>
+	<div style="flex: 3; padding-left: 20px;">
+		<p>
+			<b>Released:</b>
+			{data.movieDetails?.release_date.toLocaleDateString('en-US', {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric'
+			})}
+		</p>
+		<p><b>Runtime:</b> {data.movieDetails?.runtime} minutes</p>
+		<p><b>Overview:</b> {data.movieDetails?.overview}</p>
+		<p class="font-bold pt-1 pb-1">Genres</p>
+		<ul>
+			{#if data.genres}
+				{#each data.genres as genre}
+					<li class="list-disc list-inside indent-2">{genre.name}</li>
+				{/each}
+			{:else}
+				<li>No genres found.</li>
+			{/if}
+		</ul>
+	</div>
+</div>
 
 {#if data.movieDetails?.review}
-	<p>Review: {data.movieDetails?.review}</p>
+	<p class="pt-3 pb-1">
+		<span class="font-bold">Review:&nbsp&nbsp</span><span>{data.movieDetails?.review}</span>
+	</p>
 {/if}
 
 <!-- <div class="button-container">
@@ -126,18 +144,7 @@
 	</div>
 {/if}
 
-<p class="font-bold pt-1 pb-1">Genres</p>
-<ul>
-	{#if data.genres}
-		{#each data.genres as genre}
-			<li class="list-disc list-inside indent-2">{genre.name}</li>
-		{/each}
-	{:else}
-		<li>No genres found.</li>
-	{/if}
-</ul>
-
-<p class="font-bold pt-1 pb-1">Cast</p>
+<p class="font-bold pt-3 pb-1">Cast</p>
 <div class="flex-container">
 	{#if data.cast}
 		{#each data.cast as actor}
@@ -146,9 +153,11 @@
 					<div class="actor font-bold">{actor.name}</div>
 					<div class="picture flex justify-center">
 						{#if actor.picture}
-							<img src="data:image/jpeg;base64,{actor.picture}" alt={actor.name}
-							class="w-auto object-contain"
-							 />
+							<img
+								src="data:image/jpeg;base64,{actor.picture}"
+								alt={actor.name}
+								class="w-auto object-contain"
+							/>
 						{:else}
 							<div class="placeholder-image"></div>
 						{/if}
@@ -208,17 +217,17 @@
 	}
 	.actor {
 		grid-area: actor;
-		height: 24px ;
+		height: 24px;
 		width: 280px;
 		font-size: 18px;
 		display: flex;
-		align-items: center; 
+		align-items: center;
 		justify-content: center;
 	}
 	.picture {
 		grid-area: picture;
 		height: 100px;
-        width: 92px;
+		width: 92px;
 	}
 	.character {
 		grid-area: character;

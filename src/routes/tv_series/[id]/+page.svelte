@@ -4,6 +4,7 @@
 
 	import { onMount } from 'svelte';
 	import { object } from 'zod';
+	import { Button } from '$lib/components/ui/button';
 	import type { PageData } from './$types';
 
 	/** @type {import('./$types').PageData} */
@@ -64,7 +65,42 @@
 	{/if}
 </button>
 {#if showCast}
-	<div class="cast-list">
+	<div class="flex-container">
+		{#if data.cast}
+			{#each data.cast as actor}
+				<div class="flex-item">
+					<div class="grid-container">
+						<div class="actor font-bold">{actor.name}</div>
+						<div class="picture flex justify-center">
+							{#if actor.picture}
+								<img
+									src="data:image/jpeg;base64,{actor.picture}"
+									alt={actor.name}
+									class="w-auto object-contain"
+								/>
+							{:else}
+								<div class="placeholder-image"></div>
+							{/if}
+						</div>
+						<div class="character truncate">as {actor.character}</div>
+						<div class="details">
+							<Button
+								variant="outline"
+								class="w-full bg-emerald-300"
+								style="width: 120px"
+								on:click={() => navigateToActor(actor.id)}
+							>
+								View Details
+							</Button>
+						</div>
+					</div>
+				</div>
+			{/each}
+		{:else}
+			<p>No cast information available.</p>
+		{/if}
+	</div>
+	<!-- 	<div class="cast-list">
 		{#each data.cast as actor}
 			<a
 				href="/actor/{actor.id}"
@@ -87,7 +123,7 @@
 				</div>
 			</a>
 		{/each}
-	</div>
+	</div> -->
 {/if}
 
 <p class="font-bold pt-1 pb-1">Episodes</p>
@@ -109,7 +145,7 @@
 {:else}
 	<div class="episode-list">
 		{#each data.movieDetails as episode}
-			<div class="episode-item">
+			<div class="episode-item" style="background-color:rgb(251,249,233)">
 				<h3>{episode.name}</h3>
 				<p>Season {episode.season_number}, Episode {episode.episode_number}</p>
 				<p>Air Date: {formatDate(episode.air_date!)}</p>
@@ -145,68 +181,6 @@
 		color: #142764;
 	}
 
-	.button-form {
-		flex: 1;
-	}
-
-	.spinner-container {
-		display: flex;
-		justify-content: center;
-		margin-top: 20px;
-	}
-	.cast-list {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		padding: 10px;
-	}
-
-	.actor-card {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		height: 60px;
-		padding: 5px 10px;
-		border: 1px solid #ddd;
-		border-radius: 1px;
-		background-color: #fff;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.actor-info {
-		flex-grow: 1;
-		overflow: hidden;
-	}
-
-	.actor-info h3 {
-		margin: 0;
-		font-size: 0.9rem;
-		font-weight: bold;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.actor-info p {
-		margin: 2px 0 0 0;
-		font-size: 0.8rem;
-		color: #666;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.actor-image {
-		width: 50px;
-		height: 50px;
-		margin-left: 10px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
 	.actor-image img,
 	.placeholder-image {
 		width: 100%;
@@ -240,5 +214,77 @@
 	.left-align {
 		display: block;
 		text-align: left;
+	}
+
+	/* Below is for the cast list */
+	.flex-container {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 2px;
+		margin-left: 40px;
+		justify-content: flex-start;
+	}
+
+	.flex-item {
+		width: 300px;
+		height: 150px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	@media (max-width: 1024px) {
+		.flex-container {
+			flex-direction: row;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.flex-container {
+			flex-direction: row;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.flex-container {
+			flex-direction: column;
+		}
+	}
+	.actor {
+		grid-area: actor;
+		height: 24px;
+		width: 280px;
+		font-size: 18px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.picture {
+		grid-area: picture;
+		height: 100px;
+		width: 92px;
+	}
+	.character {
+		grid-area: character;
+		width: 188px;
+	}
+	.details {
+		grid-area: details;
+		width: 188px;
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-areas:
+			'actor actor actor actor'
+			'picture picture character character'
+			'picture picture details details';
+		padding: 2px;
+	}
+
+	.grid-container > div {
+		background-color: rgba(175, 162, 63, 0.8);
+		text-align: center;
+		padding: 1px 0;
 	}
 </style>

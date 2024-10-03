@@ -120,7 +120,7 @@
 		{#if data.movieData}
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{#each data.movieData as record}
-					<Card class="w-full">
+					<Card class="w-full" style="background-color:rgb(251,249,233)">
 						<CardHeader>
 							<CardTitle class="truncate pb-1">{record.title}</CardTitle>
 							<CardDescription class="truncate">
