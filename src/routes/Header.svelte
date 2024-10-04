@@ -34,6 +34,20 @@
 	}
 
 	const formattedBuildDate = formatDate(buildInfo.buildDate);
+	
+	const doActive = (/** @type {string} */ val) => {
+		const path = $page.url.pathname
+		if(val === 'movie'){
+			if(path === '/' || path.includes(val)) return 'page'
+			if(path.startsWith('/search')) return 'page'
+		} else {
+		if(path.includes(val)){
+			return 'page'
+		} else {
+			return undefined
+		}
+	}
+	}
 </script>
 
 <header>
@@ -49,13 +63,13 @@
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
 		</svg>
 		<ul>
-			<li aria-current={$page.url.pathname === '/' ? 'page' : undefined}>
+			<li aria-current={doActive('movie')}>
 				<a href="/">Home</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/actors' ? 'page' : undefined}>
+			<li aria-current={doActive('actor')}>
 				<a href="/actors">Actors</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/tv' ? 'page' : undefined}>
+			<li aria-current={doActive('tv')}>
 				<a href="/tv">TV</a>
 			</li>
 		</ul>
