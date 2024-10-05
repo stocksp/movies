@@ -21,7 +21,7 @@ export async function load({ url }) {
 		const genres = url.searchParams.getAll('genres');
 		const genrecount = Number(url.searchParams.get('genrecount')) || 0;
 		const page = parseInt(url.searchParams.get('page') || '1');
-		const pageSize = 50;
+		const pageSize = 15;
 		const offset = (page - 1) * pageSize;
 
 		console.log('Search parameters:', { name, genres, genrecount, page });

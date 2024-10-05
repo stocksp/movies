@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import logo from '$lib/images/svelte-logo.svg';
+	import logo from '$lib/images/Movie-logo.svg';
 	//import { Icon, Tooltip } from '@sveltestrap/sveltestrap';
 
 	/** @type {{ branchName: string; commitHash: string; buildDate: string }} */
@@ -141,9 +141,11 @@
 	}
 
 	.corner img {
-		width: 2em;
-		height: 2em;
-		object-fit: contain;
+		width: 70px;
+		height: 70px;
+		left: 20px;
+		top: 10px;
+		position: absolute;
 	}
 
 	nav {
