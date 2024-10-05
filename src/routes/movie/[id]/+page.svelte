@@ -72,7 +72,8 @@
 			{data.movieDetails?.release_date.toLocaleDateString('en-US', {
 				year: 'numeric',
 				month: 'long',
-				day: 'numeric'
+				day: 'numeric',
+				timeZone: 'UTC'
 			})}
 		</p>
 		<p><b>Runtime:</b> {data.movieDetails?.runtime} minutes</p>

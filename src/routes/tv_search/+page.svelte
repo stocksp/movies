@@ -126,7 +126,7 @@
 							<CardDescription class="truncate">
 								{record.seasons} Season{record.seasons > 1 ? 's' : ''} - First aired: {record.first_air_date.toLocaleDateString(
 									'en-US',
-									{ year: 'numeric', month: 'short', day: 'numeric' }
+									{ year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }
 								)}
 							</CardDescription>
 						</CardHeader>

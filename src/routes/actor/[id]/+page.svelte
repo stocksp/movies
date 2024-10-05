@@ -83,7 +83,8 @@
 				Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'long',
-					day: 'numeric'
+					day: 'numeric',
+					timeZone: 'UTC'
 				})}
 			</p>
 		{:else if data.actorDetails.birthday && ageInYears !== null}
@@ -91,7 +92,8 @@
 				Born {data.actorDetails.birthday.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'long',
-					day: 'numeric'
+					day: 'numeric',
+					timeZone: 'UTC'
 				})} Age {ageInYears}
 			</p>
 		{/if}
@@ -103,7 +105,8 @@
 				Died {data.actorDetails.deathday.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'long',
-					day: 'numeric'
+					day: 'numeric',
+					timeZone: 'UTC'
 				})} Age {ageInYears}
 			</p>
 		{/if}
@@ -121,7 +124,8 @@
 				released on {role.release_date.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'long',
-					day: 'numeric'
+					day: 'numeric',
+					timeZone: 'UTC'
 				})}
 			</li>
 		{/each}
@@ -138,7 +142,8 @@
 				released on {role.first_air_date.toLocaleDateString('en-US', {
 					year: 'numeric',
 					month: 'long',
-					day: 'numeric'
+					day: 'numeric',
+					timeZone: 'UTC'
 				})}
 			</li>
 		{/each}
