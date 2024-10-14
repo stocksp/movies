@@ -11,7 +11,7 @@ interface TvSeriesDetails {
 	episode_number: number;
 	name: string;
 	overview: string;
-	air_date: string | null;
+	air_date: Date;
 }
 
 interface Genre {

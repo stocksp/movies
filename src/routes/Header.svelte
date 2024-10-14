@@ -53,8 +53,8 @@
 <header>
 	<div class="corner">
 		<!-- svelte-ignore a11y_consider_explicit_label -->
-		<a href="https://kit.svelte.dev">
-			<img src={logo} alt="SvelteKit" />
+		<a href="https://movies.stocks1.dev/">
+			<img src={logo} alt="Cap's Movies" />
 		</a>
 	</div>
 

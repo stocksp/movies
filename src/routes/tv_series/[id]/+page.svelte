@@ -36,10 +36,6 @@
 		goto(`/actor/${id}`);
 	}
 
-	function formatDate(dateString: string) {
-		return dateString ? new Date(dateString).toLocaleDateString() : 'None';
-	}
-
 	let showCast = $state(false); // Add a variable to control the visibility of the cast list
 </script>
 
@@ -148,7 +144,10 @@
 			<div class="episode-item" style="background-color:rgb(251,249,233)">
 				<h3>{episode.name}</h3>
 				<p>Season {episode.season_number}, Episode {episode.episode_number}</p>
-				<p>Air Date: {formatDate(episode.air_date!)}</p>
+				<p>Air Date: {episode.air_date.toLocaleDateString(
+					'en-US',
+					{ year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }
+				)}</p>
 				<p>{episode.overview}</p>
 			</div>
 		{/each}
