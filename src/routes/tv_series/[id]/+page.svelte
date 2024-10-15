@@ -37,6 +37,7 @@
 	}
 
 	let showCast = $state(false); // Add a variable to control the visibility of the cast list
+	$inspect(data)
 </script>
 
 <p class="text-3xl font-bold">{data.seriesName}</p>
@@ -144,10 +145,10 @@
 			<div class="episode-item" style="background-color:rgb(251,249,233)">
 				<h3>{episode.name}</h3>
 				<p>Season {episode.season_number}, Episode {episode.episode_number}</p>
-				<p>Air Date: {episode.air_date.toLocaleDateString(
+				<p>Air Date: {episode.air_date ? episode.air_date.toLocaleDateString(
 					'en-US',
 					{ year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }
-				)}</p>
+				) : 'N/A'}</p>
 				<p>{episode.overview}</p>
 			</div>
 		{/each}
