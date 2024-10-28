@@ -1,49 +1,47 @@
-<script>
+<script lang="ts">
 	import { page } from '$app/stores';
 	import { goto, invalidate } from '$app/navigation';
-	import { Spinner } from '@sveltestrap/sveltestrap';
+
 	import { onMount } from 'svelte';
 	import { object } from 'zod';
+	import type { PageData } from './$types';
 
 	/** @type {import('./$types').PageData} */
-	export let data;
+	let { data }: { data: PageData } = $props();
 
-	let debugInfo = '';
+	let debugInfo = $state('');
 
-	function addDebugInfo(info) {
+	function addDebugInfo(info: string) {
 		debugInfo += info + '\n';
 		console.log(info);
 	}
-
-	$: currentSeason = parseInt($page.url.searchParams.get('season') || '1');
-	let isLoading = false;
+	
+	let isLoading = $state(false);
 
 	async function changeSeason() {
-		const season = document.getElementById('season-select').value; // Get the selected value
+		const seasonSelect = document.getElementById('season-select') as HTMLSelectElement; // Non-null assertion
+		const season = seasonSelect.value;
 		addDebugInfo(`Changing season to: ${season}`);
 		try {
 			await goto(`?season=${season}`, { replaceState: true });
-			addDebugInfo(`URL updated to: ${window.location.href}`);
+			//addDebugInfo(`URL updated to: ${window.location.href}`);
 		} catch (error) {
-			addDebugInfo(`Error updating URL: ${error.message}`);
+			console.log('Wow an error happende');
+			//addDebugInfo(`Error updating URL: ${error.message}`);
 		}
 	}
 
-	function navigateToActor(id) {
+	function navigateToActor(id: number) {
 		goto(`/actor/${id}`);
 	}
 
-	function formatDate(dateString) {
+	function formatDate(dateString: string) {
 		return dateString ? new Date(dateString).toLocaleDateString() : 'None';
 	}
-	onMount(() => {
-		addDebugInfo('Component mounted');
-		addDebugInfo(`Initial data: ${JSON.stringify(data, null, 2)}`);
-		console.dir(data.season_list)
-	});
-
-	let showCast = false; // Add a variable to control the visibility of the cast list
+	
+	let showCast = $state(false); // Add a variable to control the visibility of the cast list
 </script>
+
 
 <h1>{data.seriesName}</h1>
 
@@ -54,21 +52,24 @@
 	{/each}
 </ul>
 
-<h2 on:click={() => (showCast = !showCast)} style="cursor: pointer"> 
+<button onclick={() => (showCast = !showCast)} style="cursor: pointer">
 	Cast
 	{#if showCast}
 		<span>&darr;</span>
 	{:else}
 		<span>&rarr;</span>
 	{/if}
-</h2>
+</button>
 {#if showCast}
 	<div class="cast-list">
 		{#each data.cast as actor}
 			<a
 				href="/actor/{actor.id}"
 				class="actor-card"
-				on:click|preventDefault={() => navigateToActor(actor.id)}
+				onclick={(e) => {
+					e.preventDefault();
+					navigateToActor(actor.id);
+				}}
 			>
 				<div class="actor-info">
 					<h3>{actor.name}</h3>
@@ -87,28 +88,28 @@
 {/if}
 
 <h2>Episodes</h2>
-{#if Object.keys(data.season_list).length > 1}
+{#if data.season_list.length > 1}
 	<div class="season-selector">
 		<label for="season-select">Season:</label>
-		<select id="season-select" on:change={changeSeason}>
-			{#each Object.values(data.season_list) as season}
-				<option value={season.season_number}>Season {season.season_number}</option>
+		<select id="season-select" onchange={changeSeason}>
+			{#each data.season_list as season}
+				<option value={season.season_number} selected={season.season_number === data.season}>
+					Season {season.season_number}
+				</option>
 			{/each}
 		</select>
 	</div>
 {/if}
 
 {#if isLoading}
-	<div class="spinner-container">
-		<Spinner color="primary" />
-	</div>
+	<div>loading ...</div>
 {:else}
 	<div class="episode-list">
 		{#each data.movieDetails as episode}
 			<div class="episode-item">
 				<h3>{episode.name}</h3>
 				<p>Season {episode.season_number}, Episode {episode.episode_number}</p>
-				<p>Air Date: {formatDate(episode.air_date)}</p>
+				<p>Air Date: {formatDate(episode.air_date!)}</p>
 				<p>{episode.overview}</p>
 			</div>
 		{/each}
@@ -141,13 +142,7 @@
 		color: #142764;
 	}
 
-	.button-container {
-		display: flex;
-		justify-content: space-between;
-		gap: 10px;
-		margin-top: 20px;
-		margin-bottom: 20px;
-	}
+	
 
 	.button-form {
 		flex: 1;

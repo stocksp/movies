@@ -1,8 +1,7 @@
-/// <reference types="@sveltejs/kit" />
-/// <reference types="vite/client" />
-
+// See https://kit.svelte.dev/docs/types#app
+// for information about these interfaces
 declare global {
-    namespace App {
+	namespace App {
         interface Locals {}
         interface Platform {}
         interface PrivateEnv {
@@ -25,5 +24,25 @@ declare global {
     interface ImportMeta {
         readonly env: ImportMetaEnv;
     }
+    interface Genre {
+        id: number;
+        name: string;
+    }
+    interface MovieDetails {
+        title: string;
+        release_date: Date;
+        overview: string;
+        review: string;
+        runtime: number;
+        poster: string | null;
+    }
+    interface CastMember {
+        id: number;
+        name: string;
+        character: string;
+        picture: string | null;
+        roles: string; // Assuming roles is a string
+    }
 }
+
 export {};

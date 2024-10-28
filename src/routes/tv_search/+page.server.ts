@@ -1,6 +1,20 @@
 // @ts-nocheck
 import { pool } from '$lib/server/mysql';
+import type { RowDataPacket } from 'mysql2';
 
+interface TvSeries {
+	title: string;
+	overview: string;
+	backdrop: string | null;
+	seasons: number;
+	id: number;
+	first_air_date: Date;
+}
+
+interface Genre {
+	id: number;
+	name: string;
+}
 export async function load({ url }) {
 	try {
 		const name = url.searchParams.get('name') || '';
@@ -38,7 +52,7 @@ export async function load({ url }) {
 		}
 
 		// Count total matching records
-		const [totalCountResult] = await pool.query(sql, args);
+		const [totalCountResult] = await pool.query<RowDataPacket[]>(sql, args);
 
 		const totalCount = totalCountResult[0].total;
 		const totalPages = Math.ceil(totalCount / pageSize);
@@ -85,7 +99,15 @@ export async function load({ url }) {
 			movieArgs = [`%${name}%`, pageSize, offset];
 		}
 
-		const [movieData] = await pool.query(movieSql, movieArgs);
+		const [movieDataResult] = await pool.query(movieSql, movieArgs);
+		const movieData = (movieDataResult as RowDataPacket[]).map((record) => ({
+			title: record.title,
+			overview: record.overview,
+			backdrop: record.backdrop ? Buffer.from(record.backdrop).toString('base64') : null,
+			seasons: record.seasons,
+			id: record.id,
+			first_air_date: record.first_air_date
+		})) as TvSeries[];
 
 		// Fetch genre names
 		let genreNamesSql;
@@ -100,15 +122,11 @@ export async function load({ url }) {
 			genreNamesArgs = [];
 		}
 
-		const [genreNames] = await pool.query(genreNamesSql, genreNamesArgs);
-
-		const serializedMovieData = movieData.map((record) => ({
-			...record,
-			backdrop: record.backdrop ? Buffer.from(record.backdrop).toString('base64') : null
-		}));
+		const [genreNamesResult] = await pool.query(genreNamesSql, genreNamesArgs);
+		const genreNames = genreNamesResult as Genre[];
 
 		return {
-			movieData: serializedMovieData,
+			movieData: movieData,
 			pagination: {
 				currentPage: page,
 				totalPages,

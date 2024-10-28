@@ -3,8 +3,8 @@ import mysql2 from 'mysql2/promise';
 import { MYSQLPW } from '$env/static/private';
 
 export const pool = mysql2.createPool({
-  //host: '5.78.117.222',
-  host: 'localhost',
+  host: '5.78.117.222',
+  //host: 'localhost',
   user: 'cap',
   database: 'videos',
   password: MYSQLPW,
