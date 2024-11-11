@@ -108,7 +108,7 @@
 		<div
     id="info-tooltip"
     role="tooltip"
-    class="absolute z-10 w-[200px] {showTooltip ? 'visible opacity-100' : 'invisible opacity-0'} bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 text-sm text-gray-700 shadow-lg left-[-220px] top-2 transition-opacity duration-300"
+    class="absolute z-10 w-[220px] {showTooltip ? 'visible opacity-100' : 'invisible opacity-0'} bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 text-sm text-gray-700 shadow-lg left-[-220px] top-2 transition-opacity duration-300"
 >
     <p>Branch: <b>{buildInfo.branchName}</b></p>
     <p>Commit: <b>{shortCommitHash}</b></p>
