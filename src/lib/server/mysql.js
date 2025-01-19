@@ -1,11 +1,10 @@
 // @ts-nocheck
 import mysql2 from 'mysql2/promise';
-import { MYSQLPW } from '$env/static/private';
+import { MYSQLPW, MYSQLUSER, MYSQLHOST } from '$env/static/private';
 
 export const pool = mysql2.createPool({
-  host: '5.78.117.222',
-  //host: 'localhost',
-  user: 'cap',
+  host: MYSQLHOST,
+  user: MYSQLUSER,
   database: 'videos',
   password: MYSQLPW,
   waitForConnections: true,
