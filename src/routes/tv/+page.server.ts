@@ -9,7 +9,9 @@ export type Genre = {
 
 export const load: PageServerLoad = async () => {
 	try {
-		const [rows, fields] = await pool.query(`SELECT g.id, g.name FROM genre g`);
+		const [rows, fields] = await pool.query(`SELECT g.id, g.name FROM genre g
+			                                     WHERE EXISTS (SELECT 1 FROM tv_genres tvg WHERE g.id = tvg.genreid)
+												 ORDER BY g.name`);
 	
 		const genres: Genre[] = rows.map((row: RowDataPacket) => { 
 		  return {
