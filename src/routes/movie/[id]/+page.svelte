@@ -178,12 +178,6 @@
 	</div>
 {/if}
 
-{#if reviewText}
-	<p class="pt-3 pb-1">
-		<span class="font-bold">Generated Review:&nbsp&nbsp</span><span>{reviewText}</span>
-	</p>
-{/if}
-
 <p class="font-bold pt-3 pb-1">Cast</p>
 <div class="flex-container">
 	{#if data.cast}
